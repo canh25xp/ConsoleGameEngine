@@ -1,7 +1,9 @@
+#pragma once
+
 #include <iostream>
 #include "ConsoleGameEngine.h"
 
-class Game : public ConsoleGameEngine{
+class Game : public cge::ConsoleGameEngine {
 public:
 	Game();
 public:

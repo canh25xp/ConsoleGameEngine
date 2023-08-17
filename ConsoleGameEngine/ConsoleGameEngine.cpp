@@ -1,6 +1,8 @@
 #include "ConsoleGameEngine.h"
 
-ConsoleGameEngine::ConsoleGameEngine(){
+using namespace cge;
+
+ConsoleGameEngine::ConsoleGameEngine() {
 	m_nScreenWidth = 80;
 	m_nScreenHeight = 30;
 
@@ -18,11 +20,11 @@ ConsoleGameEngine::ConsoleGameEngine(){
 	m_sAppName = L"Default";
 }
 
-void ConsoleGameEngine::EnableSound(){
+void ConsoleGameEngine::EnableSound() {
 	m_bEnableSound = true;
 }
 
-int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fonth){
+int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fonth) {
 	if (m_hConsole == INVALID_HANDLE_VALUE)
 		return Error(L"Bad Handle");
 
@@ -51,14 +53,14 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 	SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow);
 
 	// Set the size of the screen buffer
-	COORD coord = { (short)m_nScreenWidth, (short)m_nScreenHeight };
+	COORD coord = {(short) m_nScreenWidth, (short) m_nScreenHeight};
 	if (!SetConsoleScreenBufferSize(m_hConsole, coord))
 		Error(L"SetConsoleScreenBufferSize");
 
 	// Assign screen buffer to the console
 	if (!SetConsoleActiveScreenBuffer(m_hConsole))
 		return Error(L"SetConsoleActiveScreenBuffer");
-		
+
 	// Set the font size now that the screen buffer has been assigned to the console
 	CONSOLE_FONT_INFOEX cfi;
 	cfi.cbSize = sizeof(cfi);
@@ -68,16 +70,16 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 	cfi.FontFamily = FF_DONTCARE;
 	cfi.FontWeight = FW_NORMAL;
 
-/*	DWORD version = GetVersion();
-	DWORD major = (DWORD)(LOBYTE(LOWORD(version)));
-	DWORD minor = (DWORD)(HIBYTE(LOWORD(version)));*/
+	/*	DWORD version = GetVersion();
+		DWORD major = (DWORD)(LOBYTE(LOWORD(version)));
+		DWORD minor = (DWORD)(HIBYTE(LOWORD(version)));*/
 
-	//if ((major > 6) || ((major == 6) && (minor >= 2) && (minor < 4)))		
-	//	wcscpy_s(cfi.FaceName, L"Raster"); // Windows 8 :(
-	//else
-	//	wcscpy_s(cfi.FaceName, L"Lucida Console"); // Everything else :P
+		//if ((major > 6) || ((major == 6) && (minor >= 2) && (minor < 4)))		
+		//	wcscpy_s(cfi.FaceName, L"Raster"); // Windows 8 :(
+		//else
+		//	wcscpy_s(cfi.FaceName, L"Lucida Console"); // Everything else :P
 
-	//wcscpy_s(cfi.FaceName, L"Liberation Mono");
+		//wcscpy_s(cfi.FaceName, L"Liberation Mono");
 	wcscpy_s(cfi.FaceName, L"Consolas");
 	if (!SetCurrentConsoleFontEx(m_hConsole, false, &cfi))
 		return Error(L"SetCurrentConsoleFontEx");
@@ -95,8 +97,8 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 	// Set Physical Console Window Size
 	m_rectWindow.Left = 0;
 	m_rectWindow.Top = 0;
-	m_rectWindow.Right = (short)m_nScreenWidth - 1;
-	m_rectWindow.Bottom = (short)m_nScreenHeight - 1 ;
+	m_rectWindow.Right = (short) m_nScreenWidth - 1;
+	m_rectWindow.Bottom = (short) m_nScreenHeight - 1;
 
 	if (!SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow))
 		return Error(L"SetConsoleWindowInfo");
@@ -106,22 +108,21 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 		return Error(L"SetConsoleMode");
 
 	// Allocate memory for screen buffer
-	m_bufScreen = new CHAR_INFO[m_nScreenWidth*m_nScreenHeight];
+	m_bufScreen = new CHAR_INFO[m_nScreenWidth * m_nScreenHeight];
 	memset(m_bufScreen, 0, sizeof(CHAR_INFO) * m_nScreenWidth * m_nScreenHeight);
 
-	SetConsoleCtrlHandler((PHANDLER_ROUTINE)CloseHandler, TRUE);
+	SetConsoleCtrlHandler((PHANDLER_ROUTINE) CloseHandler, TRUE);
 	return 1;
 }
 
-void ConsoleGameEngine::Draw(int x, int y, short c, short col){
-	if (x >= 0 && x < m_nScreenWidth && y >= 0 && y < m_nScreenHeight)
-	{
+void ConsoleGameEngine::Draw(int x, int y, short c, short col) {
+	if (x >= 0 && x < m_nScreenWidth && y >= 0 && y < m_nScreenHeight) {
 		m_bufScreen[y * m_nScreenWidth + x].Char.UnicodeChar = c;
 		m_bufScreen[y * m_nScreenWidth + x].Attributes = col;
 	}
 }
 
-void ConsoleGameEngine::Fill(int x1, int y1, int x2, int y2, short c, short col){
+void ConsoleGameEngine::Fill(int x1, int y1, int x2, int y2, short c, short col) {
 	Clip(x1, y1);
 	Clip(x2, y2);
 	for (int x = x1; x < x2; x++)
@@ -129,76 +130,68 @@ void ConsoleGameEngine::Fill(int x1, int y1, int x2, int y2, short c, short col)
 			Draw(x, y, c, col);
 }
 
-void ConsoleGameEngine::DrawString(int x, int y, std::wstring c, short col){
-	for (size_t i = 0; i < c.size(); i++)
-	{
+void ConsoleGameEngine::DrawString(int x, int y, std::wstring c, short col) {
+	for (size_t i = 0; i < c.size(); i++) {
 		m_bufScreen[y * m_nScreenWidth + x + i].Char.UnicodeChar = c[i];
 		m_bufScreen[y * m_nScreenWidth + x + i].Attributes = col;
 	}
 }
 
-void ConsoleGameEngine::DrawStringAlpha(int x, int y, std::wstring c, short col){
-	for (size_t i = 0; i < c.size(); i++)
-	{
-		if (c[i] != L' ')
-		{
+void ConsoleGameEngine::DrawStringAlpha(int x, int y, std::wstring c, short col) {
+	for (size_t i = 0; i < c.size(); i++) {
+		if (c[i] != L' ') {
 			m_bufScreen[y * m_nScreenWidth + x + i].Char.UnicodeChar = c[i];
 			m_bufScreen[y * m_nScreenWidth + x + i].Attributes = col;
 		}
 	}
 }
 
-void ConsoleGameEngine::Clip(int &x, int &y){
+void ConsoleGameEngine::Clip(int& x, int& y) {
 	if (x < 0) x = 0;
 	if (x >= m_nScreenWidth) x = m_nScreenWidth;
 	if (y < 0) y = 0;
 	if (y >= m_nScreenHeight) y = m_nScreenHeight;
 }
 
-void ConsoleGameEngine::DrawLine(int x1, int y1, int x2, int y2, short c, short col){
+void ConsoleGameEngine::DrawLine(int x1, int y1, int x2, int y2, short c, short col) {
 	int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
 	dx = x2 - x1; dy = y2 - y1;
 	dx1 = abs(dx); dy1 = abs(dy);
 	px = 2 * dy1 - dx1;	py = 2 * dx1 - dy1;
-	if (dy1 <= dx1)
-	{
-		if (dx >= 0)
-			{ x = x1; y = y1; xe = x2; }
-		else
-			{ x = x2; y = y2; xe = x1;}
+	if (dy1 <= dx1) {
+		if (dx >= 0) {
+			x = x1; y = y1; xe = x2;
+		} else {
+			x = x2; y = y2; xe = x1;
+		}
 
 		Draw(x, y, c, col);
-			
-		for (i = 0; x<xe; i++)
-		{
+
+		for (i = 0; x < xe; i++) {
 			x = x + 1;
-			if (px<0)
+			if (px < 0)
 				px = px + 2 * dy1;
-			else
-			{
-				if ((dx<0 && dy<0) || (dx>0 && dy>0)) y = y + 1; else y = y - 1;
+			else {
+				if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) y = y + 1; else y = y - 1;
 				px = px + 2 * (dy1 - dx1);
 			}
 			Draw(x, y, c, col);
 		}
-	}
-	else
-	{
-		if (dy >= 0)
-			{ x = x1; y = y1; ye = y2; }
-		else
-			{ x = x2; y = y2; ye = y1; }
+	} else {
+		if (dy >= 0) {
+			x = x1; y = y1; ye = y2;
+		} else {
+			x = x2; y = y2; ye = y1;
+		}
 
 		Draw(x, y, c, col);
 
-		for (i = 0; y<ye; i++)
-		{
+		for (i = 0; y < ye; i++) {
 			y = y + 1;
 			if (py <= 0)
 				py = py + 2 * dx1;
-			else
-			{
-				if ((dx<0 && dy<0) || (dx>0 && dy>0)) x = x + 1; else x = x - 1;
+			else {
+				if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) x = x + 1; else x = x - 1;
 				py = py + 2 * (dx1 - dy1);
 			}
 			Draw(x, y, c, col);
@@ -206,34 +199,32 @@ void ConsoleGameEngine::DrawLine(int x1, int y1, int x2, int y2, short c, short 
 	}
 }
 
-void ConsoleGameEngine::DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c, short col){
+void ConsoleGameEngine::DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c, short col) {
 	DrawLine(x1, y1, x2, y2, c, col);
 	DrawLine(x2, y2, x3, y3, c, col);
 	DrawLine(x3, y3, x1, y1, c, col);
 }
 
-void ConsoleGameEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c, short col){
-	auto SWAP = [](int &x, int &y) { int t = x; x = y; y = t; };
-	auto drawline = [&](int sx, int ex, int ny) { for (int i = sx; i <= ex; i++) Draw(i, ny, c, col); };
-		
+void ConsoleGameEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c, short col) {
+	auto SWAP = [] (int& x, int& y) { int t = x; x = y; y = t; };
+	auto drawline = [&] (int sx, int ex, int ny) { for (int i = sx; i <= ex; i++) Draw(i, ny, c, col); };
+
 	int t1x, t2x, y, minx, maxx, t1xp, t2xp;
 	bool changed1 = false;
 	bool changed2 = false;
 	int signx1, signx2, dx1, dy1, dx2, dy2;
 	int e1, e2;
 	// Sort vertices
-	if (y1>y2) { SWAP(y1, y2); SWAP(x1, x2); }
-	if (y1>y3) { SWAP(y1, y3); SWAP(x1, x3); }
-	if (y2>y3) { SWAP(y2, y3); SWAP(x2, x3); }
+	if (y1 > y2) { SWAP(y1, y2); SWAP(x1, x2); }
+	if (y1 > y3) { SWAP(y1, y3); SWAP(x1, x3); }
+	if (y2 > y3) { SWAP(y2, y3); SWAP(x2, x3); }
 
 	t1x = t2x = x1; y = y1;   // Starting points
-	dx1 = (int)(x2 - x1); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
-	else signx1 = 1;
-	dy1 = (int)(y2 - y1);
+	dx1 = (int) (x2 - x1); if (dx1 < 0) { dx1 = -dx1; signx1 = -1; } else signx1 = 1;
+	dy1 = (int) (y2 - y1);
 
-	dx2 = (int)(x3 - x1); if (dx2<0) { dx2 = -dx2; signx2 = -1; }
-	else signx2 = 1;
-	dy2 = (int)(y3 - y1);
+	dx2 = (int) (x3 - x1); if (dx2 < 0) { dx2 = -dx2; signx2 = -1; } else signx2 = 1;
+	dy2 = (int) (y3 - y1);
 
 	if (dy1 > dx1) {   // swap values
 		SWAP(dx1, dy1);
@@ -244,17 +235,16 @@ void ConsoleGameEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int
 		changed2 = true;
 	}
 
-	e2 = (int)(dx2 >> 1);
+	e2 = (int) (dx2 >> 1);
 	// Flat top, just process the second half
 	if (y1 == y2) goto next;
-	e1 = (int)(dx1 >> 1);
+	e1 = (int) (dx1 >> 1);
 
 	for (int i = 0; i < dx1;) {
 		t1xp = 0; t2xp = 0;
-		if (t1x<t2x) { minx = t1x; maxx = t2x; }
-		else { minx = t2x; maxx = t1x; }
+		if (t1x < t2x) { minx = t1x; maxx = t2x; } else { minx = t2x; maxx = t1x; }
 		// process first line until y value is about to change
-		while (i<dx1) {
+		while (i < dx1) {
 			i++;
 			e1 += dy1;
 			while (e1 >= dx1) {
@@ -279,10 +269,10 @@ void ConsoleGameEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int
 			else              t2x += signx2;
 		}
 	next2:
-		if (minx>t1x) minx = t1x; if (minx>t2x) minx = t2x;
-		if (maxx<t1x) maxx = t1x; if (maxx<t2x) maxx = t2x;
+		if (minx > t1x) minx = t1x; if (minx > t2x) minx = t2x;
+		if (maxx < t1x) maxx = t1x; if (maxx < t2x) maxx = t2x;
 		drawline(minx, maxx, y);    // Draw line from min to max points found on the y
-										// Now increase y
+		// Now increase y
 		if (!changed1) t1x += signx1;
 		t1x += t1xp;
 		if (!changed2) t2x += signx2;
@@ -293,25 +283,22 @@ void ConsoleGameEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int
 	}
 next:
 	// Second half
-	dx1 = (int)(x3 - x2); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
-	else signx1 = 1;
-	dy1 = (int)(y3 - y2);
+	dx1 = (int) (x3 - x2); if (dx1 < 0) { dx1 = -dx1; signx1 = -1; } else signx1 = 1;
+	dy1 = (int) (y3 - y2);
 	t1x = x2;
 
 	if (dy1 > dx1) {   // swap values
 		SWAP(dy1, dx1);
 		changed1 = true;
-	}
-	else changed1 = false;
+	} else changed1 = false;
 
-	e1 = (int)(dx1 >> 1);
+	e1 = (int) (dx1 >> 1);
 
 	for (int i = 0; i <= dx1; i++) {
 		t1xp = 0; t2xp = 0;
-		if (t1x<t2x) { minx = t1x; maxx = t2x; }
-		else { minx = t2x; maxx = t1x; }
+		if (t1x < t2x) { minx = t1x; maxx = t2x; } else { minx = t2x; maxx = t1x; }
 		// process first line until y value is about to change
-		while (i<dx1) {
+		while (i < dx1) {
 			e1 += dy1;
 			while (e1 >= dx1) {
 				e1 -= dx1;
@@ -320,7 +307,7 @@ next:
 			}
 			if (changed1) break;
 			else   	   	  t1x += signx1;
-			if (i<dx1) i++;
+			if (i < dx1) i++;
 		}
 	next3:
 		// process second line until y value is about to change
@@ -336,19 +323,19 @@ next:
 		}
 	next4:
 
-		if (minx>t1x) minx = t1x; if (minx>t2x) minx = t2x;
-		if (maxx<t1x) maxx = t1x; if (maxx<t2x) maxx = t2x;
-		drawline(minx, maxx, y);   										
+		if (minx > t1x) minx = t1x; if (minx > t2x) minx = t2x;
+		if (maxx < t1x) maxx = t1x; if (maxx < t2x) maxx = t2x;
+		drawline(minx, maxx, y);
 		if (!changed1) t1x += signx1;
 		t1x += t1xp;
 		if (!changed2) t2x += signx2;
 		t2x += t2xp;
 		y += 1;
-		if (y>y3) return;
+		if (y > y3) return;
 	}
 }
 
-void ConsoleGameEngine::DrawCircle(int xc, int yc, int r, short c, short col){
+void ConsoleGameEngine::DrawCircle(int xc, int yc, int r, short c, short col) {
 	int x = 0;
 	int y = r;
 	int p = 3 - 2 * r;
@@ -369,21 +356,19 @@ void ConsoleGameEngine::DrawCircle(int xc, int yc, int r, short c, short col){
 	}
 }
 
-void ConsoleGameEngine::FillCircle(int xc, int yc, int r, short c, short col){
+void ConsoleGameEngine::FillCircle(int xc, int yc, int r, short c, short col) {
 	// Taken from wikipedia
 	int x = 0;
 	int y = r;
 	int p = 3 - 2 * r;
 	if (!r) return;
 
-	auto drawline = [&](int sx, int ex, int ny)
-	{
+	auto drawline = [&] (int sx, int ex, int ny) {
 		for (int i = sx; i <= ex; i++)
 			Draw(i, ny, c, col);
-	};
+		};
 
-	while (y >= x)
-	{
+	while (y >= x) {
 		// Modified to draw scan-lines instead of edges
 		drawline(xc - x, xc + x, yc - y);
 		drawline(xc - y, xc + y, yc - x);
@@ -394,35 +379,31 @@ void ConsoleGameEngine::FillCircle(int xc, int yc, int r, short c, short col){
 	}
 };
 
-void ConsoleGameEngine::DrawSprite(int x, int y, Sprite *sprite){
+void ConsoleGameEngine::DrawSprite(int x, int y, Sprite* sprite) {
 	if (sprite == nullptr)
 		return;
 
-	for (int i = 0; i < sprite->nWidth; i++)
-	{
-		for (int j = 0; j < sprite->nHeight; j++)
-		{
+	for (int i = 0; i < sprite->nWidth; i++) {
+		for (int j = 0; j < sprite->nHeight; j++) {
 			if (sprite->GetGlyph(i, j) != L' ')
 				Draw(x + i, y + j, sprite->GetGlyph(i, j), sprite->GetColour(i, j));
 		}
 	}
 }
 
-void ConsoleGameEngine::DrawPartialSprite(int x, int y, Sprite *sprite, int ox, int oy, int w, int h){
+void ConsoleGameEngine::DrawPartialSprite(int x, int y, Sprite* sprite, int ox, int oy, int w, int h) {
 	if (sprite == nullptr)
 		return;
 
-	for (int i = 0; i < w; i++)
-	{
-		for (int j = 0; j < h; j++)
-		{
-			if (sprite->GetGlyph(i+ox, j+oy) != L' ')
-				Draw(x + i, y + j, sprite->GetGlyph(i+ox, j+oy), sprite->GetColour(i+ox, j+oy));
+	for (int i = 0; i < w; i++) {
+		for (int j = 0; j < h; j++) {
+			if (sprite->GetGlyph(i + ox, j + oy) != L' ')
+				Draw(x + i, y + j, sprite->GetGlyph(i + ox, j + oy), sprite->GetColour(i + ox, j + oy));
 		}
 	}
 }
 
-void ConsoleGameEngine::DrawWireFrameModel(const std::vector<std::pair<float, float>> &vecModelCoordinates, float x, float y, float r, float s, short col, short c){
+void ConsoleGameEngine::DrawWireFrameModel(const std::vector<std::pair<float, float>>& vecModelCoordinates, float x, float y, float r, float s, short col, short c) {
 	// pair.first = x coordinate
 	// pair.second = y coordinate
 
@@ -432,41 +413,37 @@ void ConsoleGameEngine::DrawWireFrameModel(const std::vector<std::pair<float, fl
 	vecTransformedCoordinates.resize(verts);
 
 	// Rotate
-	for (int i = 0; i < verts; i++)
-	{
+	for (int i = 0; i < verts; i++) {
 		vecTransformedCoordinates[i].first = vecModelCoordinates[i].first * cosf(r) - vecModelCoordinates[i].second * sinf(r);
 		vecTransformedCoordinates[i].second = vecModelCoordinates[i].first * sinf(r) + vecModelCoordinates[i].second * cosf(r);
 	}
 
 	// Scale
-	for (int i = 0; i < verts; i++)
-	{
+	for (int i = 0; i < verts; i++) {
 		vecTransformedCoordinates[i].first = vecTransformedCoordinates[i].first * s;
 		vecTransformedCoordinates[i].second = vecTransformedCoordinates[i].second * s;
 	}
 
 	// Translate
-	for (int i = 0; i < verts; i++)
-	{
+	for (int i = 0; i < verts; i++) {
 		vecTransformedCoordinates[i].first = vecTransformedCoordinates[i].first + x;
 		vecTransformedCoordinates[i].second = vecTransformedCoordinates[i].second + y;
 	}
 
 	// Draw Closed Polygon
-	for (int i = 0; i < verts + 1; i++)
-	{
+	for (int i = 0; i < verts + 1; i++) {
 		int j = (i + 1);
-		DrawLine((int)vecTransformedCoordinates[i % verts].first, (int)vecTransformedCoordinates[i % verts].second,
-			(int)vecTransformedCoordinates[j % verts].first, (int)vecTransformedCoordinates[j % verts].second, c, col);
+		DrawLine((int) vecTransformedCoordinates[i % verts].first, (int) vecTransformedCoordinates[i % verts].second,
+				 (int) vecTransformedCoordinates[j % verts].first, (int) vecTransformedCoordinates[j % verts].second, c, col);
 	}
 }
 
-ConsoleGameEngine::~ConsoleGameEngine(){
+ConsoleGameEngine::~ConsoleGameEngine() {
 	SetConsoleActiveScreenBuffer(m_hOriginalConsole);
 	delete[] m_bufScreen;
 }
 
-void ConsoleGameEngine::Start(){	
+void ConsoleGameEngine::Start() {
 	// Start the thread
 	m_bAtomActive = true;
 	std::thread t = std::thread(&ConsoleGameEngine::GameThread, this);
@@ -475,7 +452,7 @@ void ConsoleGameEngine::Start(){
 	t.join();
 }
 
-int ConsoleGameEngine::ScreenWidth(){
+int ConsoleGameEngine::ScreenWidth() {
 	return m_nScreenWidth;
 }
 
@@ -483,16 +460,14 @@ int ConsoleGameEngine::ScreenHeight() {
 	return m_nScreenHeight;
 }
 
-void ConsoleGameEngine::GameThread(){
+void ConsoleGameEngine::GameThread() {
 	// Create user resources as part of this thread
-	if (!OnUserCreate()) 
+	if (!OnUserCreate())
 		m_bAtomActive = false;
 
 	// Check if sound system should be enabled
-	if (m_bEnableSound)
-	{
-		if (!CreateAudio())
-		{
+	if (m_bEnableSound) {
+		if (!CreateAudio()) {
 			m_bAtomActive = false; // Failed to create audio system			
 			m_bEnableSound = false;
 		}
@@ -501,11 +476,9 @@ void ConsoleGameEngine::GameThread(){
 	auto tp1 = std::chrono::system_clock::now();
 	auto tp2 = std::chrono::system_clock::now();
 
-	while (m_bAtomActive)
-	{
+	while (m_bAtomActive) {
 		// Run as fast as possible
-		while (m_bAtomActive)
-		{
+		while (m_bAtomActive) {
 			// Handle Timing
 			tp2 = std::chrono::system_clock::now();
 			std::chrono::duration<float> elapsedTime = tp2 - tp1;
@@ -513,22 +486,17 @@ void ConsoleGameEngine::GameThread(){
 			float fElapsedTime = elapsedTime.count();
 
 			// Handle Keyboard Input
-			for (int i = 0; i < 256; i++)
-			{
+			for (int i = 0; i < 256; i++) {
 				m_keyNewState[i] = GetAsyncKeyState(i);
 
 				m_keys[i].bPressed = false;
 				m_keys[i].bReleased = false;
 
-				if (m_keyNewState[i] != m_keyOldState[i])
-				{
-					if (m_keyNewState[i] & 0x8000)
-					{
+				if (m_keyNewState[i] != m_keyOldState[i]) {
+					if (m_keyNewState[i] & 0x8000) {
 						m_keys[i].bPressed = !m_keys[i].bHeld;
 						m_keys[i].bHeld = true;
-					}
-					else
-					{
+					} else {
 						m_keys[i].bReleased = true;
 						m_keys[i].bHeld = false;
 					}
@@ -546,60 +514,53 @@ void ConsoleGameEngine::GameThread(){
 
 			// Handle events - we only care about mouse clicks and movement
 			// for now
-			for (DWORD i = 0; i < events; i++){
-				switch (inBuf[i].EventType)
-				{
-				case FOCUS_EVENT:
-				{
-					m_bConsoleInFocus = inBuf[i].Event.FocusEvent.bSetFocus;
-				}
-				break;
-
-				case MOUSE_EVENT:
-				{
-					switch (inBuf[i].Event.MouseEvent.dwEventFlags)
+			for (DWORD i = 0; i < events; i++) {
+				switch (inBuf[i].EventType) {
+					case FOCUS_EVENT:
 					{
-					case MOUSE_MOVED:
-					{
-						m_mousePosX = inBuf[i].Event.MouseEvent.dwMousePosition.X;
-						m_mousePosY = inBuf[i].Event.MouseEvent.dwMousePosition.Y;
+						m_bConsoleInFocus = inBuf[i].Event.FocusEvent.bSetFocus;
 					}
 					break;
 
-					case 0:
+					case MOUSE_EVENT:
 					{
-						for (int m = 0; m < 5; m++)
-							m_mouseNewState[m] = (inBuf[i].Event.MouseEvent.dwButtonState & (1 << m)) > 0;
+						switch (inBuf[i].Event.MouseEvent.dwEventFlags) {
+							case MOUSE_MOVED:
+							{
+								m_mousePosX = inBuf[i].Event.MouseEvent.dwMousePosition.X;
+								m_mousePosY = inBuf[i].Event.MouseEvent.dwMousePosition.Y;
+							}
+							break;
 
+							case 0:
+							{
+								for (int m = 0; m < 5; m++)
+									m_mouseNewState[m] = (inBuf[i].Event.MouseEvent.dwButtonState & (1 << m)) > 0;
+
+							}
+							break;
+
+							default:
+								break;
+						}
 					}
 					break;
 
 					default:
 						break;
-					}
-				}
-				break;
-
-				default:
-					break;
-					// We don't care just at the moment
+						// We don't care just at the moment
 				}
 			}
 
-			for (int m = 0; m < 5; m++)
-			{
+			for (int m = 0; m < 5; m++) {
 				m_mouse[m].bPressed = false;
 				m_mouse[m].bReleased = false;
 
-				if (m_mouseNewState[m] != m_mouseOldState[m])
-				{
-					if (m_mouseNewState[m])
-					{
+				if (m_mouseNewState[m] != m_mouseOldState[m]) {
+					if (m_mouseNewState[m]) {
 						m_mouse[m].bPressed = true;
 						m_mouse[m].bHeld = true;
-					}
-					else
-					{
+					} else {
 						m_mouse[m].bReleased = true;
 						m_mouse[m].bHeld = false;
 					}
@@ -615,54 +576,50 @@ void ConsoleGameEngine::GameThread(){
 
 			// Update Title & Present Screen Buffer
 			wchar_t s[256];
-			swprintf_s(s, 256, L"OneLoneCoder.com - Console Game Engine - %s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
+			swprintf_s(s, 256, L"Console Game Engine - %s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 			SetConsoleTitle(s);
 			COORD BufferSize;
-			BufferSize.X = (short)m_nScreenWidth;
-			BufferSize.Y =  (short)m_nScreenHeight;
+			BufferSize.X = (short) m_nScreenWidth;
+			BufferSize.Y = (short) m_nScreenHeight;
 			COORD BufferCoord;
 			BufferCoord.X = 0;
 			BufferCoord.Y = 0;
 			WriteConsoleOutput(m_hConsole, m_bufScreen, BufferSize, BufferCoord, &m_rectWindow);
 		}
 
-		if (m_bEnableSound)
-		{
+		if (m_bEnableSound) {
 			// Close and Clean up audio system
 		}
 
 		// Allow the user to free resources if they have overrided the destroy function
-		if (OnUserDestroy())
-		{
+		if (OnUserDestroy()) {
 			// User has permitted destroy, so exit and clean up
 			delete[] m_bufScreen;
 			SetConsoleActiveScreenBuffer(m_hOriginalConsole);
 			m_cvGameFinished.notify_one();
-		}
-		else
-		{
+		} else {
 			// User denied destroy for some reason, so continue running
 			m_bAtomActive = true;
 		}
 	}
 }
 
-bool ConsoleGameEngine::OnUserDestroy(){
+bool ConsoleGameEngine::OnUserDestroy() {
 	return true;
 }
 
 // Audio Engine =====================================================================
 
-ConsoleGameEngine::AudioSample::AudioSample(){
-		fSample = nullptr;
-		nSamples = 0;
-		nChannels = 0;
-		bSampleValid = false;
+ConsoleGameEngine::AudioSample::AudioSample() {
+	fSample = nullptr;
+	nSamples = 0;
+	nChannels = 0;
+	bSampleValid = false;
 }
 
-ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile){
+ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile) {
 	// Load Wav file and convert to float format
-	FILE *f = nullptr;
+	FILE* f = nullptr;
 	_wfopen_s(&f, sWavFile.c_str(), L"rb");
 	if (f == nullptr)
 		return;
@@ -678,12 +635,11 @@ ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile){
 	std::fread(&dump, sizeof(char), 4, f); // Read "fmt "
 	std::fread(&dump, sizeof(char), 4, f); // Not Interested
 	std::fread(&wavHeader, sizeof(WAVEFORMATEX) - 2, 1, f); // Read Wave Format Structure chunk
-															// Note the -2, because the structure has 2 bytes to indicate its own size
-															// which are not in the wav file
+	// Note the -2, because the structure has 2 bytes to indicate its own size
+	// which are not in the wav file
 
-	// Just check if wave format is compatible with olcCGE
-	if (wavHeader.wBitsPerSample != 16 || wavHeader.nSamplesPerSec != 44100)
-	{
+// Just check if wave format is compatible with olcCGE
+	if (wavHeader.wBitsPerSample != 16 || wavHeader.nSamplesPerSec != 44100) {
 		std::fclose(f);
 		return;
 	}
@@ -692,8 +648,7 @@ ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile){
 	long nChunksize = 0;
 	std::fread(&dump, sizeof(char), 4, f); // Read chunk header
 	std::fread(&nChunksize, sizeof(long), 1, f); // Read chunk size
-	while (strncmp(dump, "data", 4) != 0)
-	{
+	while (strncmp(dump, "data", 4) != 0) {
 		// Not audio data, so just skip it
 		std::fseek(f, nChunksize, SEEK_CUR);
 		std::fread(&dump, sizeof(char), 4, f);
@@ -703,19 +658,17 @@ ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile){
 	// Finally got to data, so read it all in and convert to float samples
 	nSamples = nChunksize / (wavHeader.nChannels * (wavHeader.wBitsPerSample >> 3));
 	nChannels = wavHeader.nChannels;
-			
+
 	// Create floating point buffer to hold audio sample
 	fSample = new float[nSamples * nChannels];
-	float *pSample = fSample;
-			
+	float* pSample = fSample;
+
 	// Read in audio data and normalise
-	for (long i = 0; i < nSamples; i++)
-	{
-		for (int c = 0; c < nChannels; c++)
-		{
+	for (long i = 0; i < nSamples; i++) {
+		for (int c = 0; c < nChannels; c++) {
 			short s = 0;
 			std::fread(&s, sizeof(short), 1, f);
-			*pSample = (float)s / (float)(MAXSHORT);
+			*pSample = (float) s / (float) (MAXSHORT);
 			pSample++;
 		}
 	}
@@ -725,22 +678,20 @@ ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile){
 	bSampleValid = true;
 }
 
-unsigned int ConsoleGameEngine::LoadAudioSample(std::wstring sWavFile){
+unsigned int ConsoleGameEngine::LoadAudioSample(std::wstring sWavFile) {
 	if (!m_bEnableSound)
 		return -1;
 
 	AudioSample a(sWavFile);
-	if (a.bSampleValid)
-	{
+	if (a.bSampleValid) {
 		vecAudioSamples.push_back(a);
 		return vecAudioSamples.size();
-	}
-	else
+	} else
 		return -1;
 }
 
 // Add sample 'id' to the mixers sounds to play list
-void ConsoleGameEngine::PlaySample(int id, bool bLoop){
+void ConsoleGameEngine::PlaySample(int id, bool bLoop) {
 	sCurrentlyPlayingSample a;
 	a.nAudioSampleID = id;
 	a.nSamplePosition = 0;
@@ -749,12 +700,12 @@ void ConsoleGameEngine::PlaySample(int id, bool bLoop){
 	listActiveSamples.push_back(a);
 }
 
-void ConsoleGameEngine::StopSample(int id){
+void ConsoleGameEngine::StopSample(int id) {
 
 }
 
 // The audio system uses by default a specific wave format
-bool ConsoleGameEngine::CreateAudio(unsigned int nSampleRate, unsigned int nChannels, unsigned int nBlocks, unsigned int nBlockSamples){
+bool ConsoleGameEngine::CreateAudio(unsigned int nSampleRate, unsigned int nChannels, unsigned int nBlocks, unsigned int nBlockSamples) {
 	// Initialise Sound Engine
 	m_bAudioThreadActive = false;
 	m_nSampleRate = nSampleRate;
@@ -777,9 +728,9 @@ bool ConsoleGameEngine::CreateAudio(unsigned int nSampleRate, unsigned int nChan
 	waveFormat.cbSize = 0;
 
 	// Open Device if valid
-	if (waveOutOpen(&m_hwDevice, WAVE_MAPPER, &waveFormat, (DWORD_PTR)waveOutProcWrap, (DWORD_PTR)this, CALLBACK_FUNCTION) != S_OK)
+	if (waveOutOpen(&m_hwDevice, WAVE_MAPPER, &waveFormat, (DWORD_PTR) waveOutProcWrap, (DWORD_PTR) this, CALLBACK_FUNCTION) != S_OK)
 		return DestroyAudio();
-		
+
 	// Allocate Wave|Block Memory
 	m_pBlockMemory = new short[m_nBlockCount * m_nBlockSamples];
 	if (m_pBlockMemory == nullptr)
@@ -792,9 +743,9 @@ bool ConsoleGameEngine::CreateAudio(unsigned int nSampleRate, unsigned int nChan
 	ZeroMemory(m_pWaveHeaders, sizeof(WAVEHDR) * m_nBlockCount);
 
 	// Link headers to block memory
-	for (unsigned int n = 0; n < m_nBlockCount; n++){
+	for (unsigned int n = 0; n < m_nBlockCount; n++) {
 		m_pWaveHeaders[n].dwBufferLength = m_nBlockSamples * sizeof(short);
-		m_pWaveHeaders[n].lpData = (LPSTR)(m_pBlockMemory + (n * m_nBlockSamples));
+		m_pWaveHeaders[n].lpData = (LPSTR) (m_pBlockMemory + (n * m_nBlockSamples));
 	}
 
 	m_bAudioThreadActive = true;
@@ -807,13 +758,13 @@ bool ConsoleGameEngine::CreateAudio(unsigned int nSampleRate, unsigned int nChan
 }
 
 // Stop and clean up audio system
-bool ConsoleGameEngine::DestroyAudio(){
+bool ConsoleGameEngine::DestroyAudio() {
 	m_bAudioThreadActive = false;
 	return false;
 }
 
 // Handler for soundcard request for more data
-void ConsoleGameEngine::waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwParam1, DWORD dwParam2){
+void ConsoleGameEngine::waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwParam1, DWORD dwParam2) {
 	if (uMsg != WOM_DONE) return;
 	m_nBlockFree++;
 	std::unique_lock<std::mutex> lm(m_muxBlockNotZero);
@@ -821,26 +772,26 @@ void ConsoleGameEngine::waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwParam1
 }
 
 // Static wrapper for sound card handler
-void CALLBACK ConsoleGameEngine::waveOutProcWrap(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2){
-	((ConsoleGameEngine*)dwInstance)->waveOutProc(hWaveOut, uMsg, dwParam1, dwParam2);
+void CALLBACK ConsoleGameEngine::waveOutProcWrap(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2) {
+	((ConsoleGameEngine*) dwInstance)->waveOutProc(hWaveOut, uMsg, dwParam1, dwParam2);
 }
 
 // Audio thread. This loop responds to requests from the soundcard to fill 'blocks'
 // with audio data. If no requests are available it goes dormant until the sound
 // card is ready for more data. The block is fille by the "user" in some manner
 // and then issued to the soundcard.
-void ConsoleGameEngine::AudioThread(){
+void ConsoleGameEngine::AudioThread() {
 	m_fGlobalTime = 0.0f;
-	float fTimeStep = 1.0f / (float)m_nSampleRate;
+	float fTimeStep = 1.0f / (float) m_nSampleRate;
 
 	// Goofy hack to get maximum integer for a type at run-time
-	short nMaxSample = (short)pow(2, (sizeof(short) * 8) - 1) - 1;
-	float fMaxSample = (float)nMaxSample;
+	short nMaxSample = (short) pow(2, (sizeof(short) * 8) - 1) - 1;
+	float fMaxSample = (float) nMaxSample;
 	short nPreviousSample = 0;
 
-	while (m_bAudioThreadActive){
+	while (m_bAudioThreadActive) {
 		// Wait for block to become available
-		if (m_nBlockFree == 0){
+		if (m_nBlockFree == 0) {
 			std::unique_lock<std::mutex> lm(m_muxBlockNotZero);
 			while (m_nBlockFree == 0) // sometimes, Windows signals incorrectly
 				m_cvBlockNotZero.wait(lm);
@@ -856,17 +807,17 @@ void ConsoleGameEngine::AudioThread(){
 		short nNewSample = 0;
 		int nCurrentBlock = m_nBlockCurrent * m_nBlockSamples;
 
-		auto clip = [](float fSample, float fMax){
+		auto clip = [] (float fSample, float fMax) {
 			if (fSample >= 0.0)
 				return max(fSample, fMax);
 			else
 				return min(fSample, -fMax);
-		};
+			};
 
-		for (unsigned int n = 0; n < m_nBlockSamples; n += m_nChannels){
+		for (unsigned int n = 0; n < m_nBlockSamples; n += m_nChannels) {
 			// User Process
-			for (unsigned int c = 0; c < m_nChannels; c++){
-				nNewSample = (short)(clip(GetMixerOutput(c, m_fGlobalTime, fTimeStep), 1.0) * fMaxSample);
+			for (unsigned int c = 0; c < m_nChannels; c++) {
+				nNewSample = (short) (clip(GetMixerOutput(c, m_fGlobalTime, fTimeStep), 1.0) * fMaxSample);
 				m_pBlockMemory[nCurrentBlock + n + c] = nNewSample;
 				nPreviousSample = nNewSample;
 			}
@@ -883,12 +834,12 @@ void ConsoleGameEngine::AudioThread(){
 }
 
 // Overridden by user if they want to generate sound in real-time
-float ConsoleGameEngine::onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep){
+float ConsoleGameEngine::onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep) {
 	return 0.0f;
 }
 
 // Overriden by user if they want to manipulate the sound before it is played
-float ConsoleGameEngine::onUserSoundFilter(int nChannel, float fGlobalTime, float fSample){
+float ConsoleGameEngine::onUserSoundFilter(int nChannel, float fGlobalTime, float fSample) {
 	return fSample;
 }
 
@@ -909,13 +860,13 @@ float ConsoleGameEngine::onUserSoundFilter(int nChannel, float fGlobalTime, floa
 // Finally, before the sound is issued to the operating system for performing, the
 // user gets one final chance to "filter" the sound, perhaps changing the volume
 // or adding funky effects
-float ConsoleGameEngine::GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep){
+float ConsoleGameEngine::GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep) {
 	// Accumulate sample for this channel
 	float fMixerSample = 0.0f;
 
-	for (auto &s : listActiveSamples){
+	for (auto& s : listActiveSamples) {
 		// Calculate sample position
-		s.nSamplePosition += (long)((float)vecAudioSamples[s.nAudioSampleID - 1].wavHeader.nSamplesPerSec * fTimeStep);
+		s.nSamplePosition += (long) ((float) vecAudioSamples[s.nAudioSampleID - 1].wavHeader.nSamplesPerSec * fTimeStep);
 
 		// If sample position is valid add to the mix
 		if (s.nSamplePosition < vecAudioSamples[s.nAudioSampleID - 1].nSamples)
@@ -925,7 +876,7 @@ float ConsoleGameEngine::GetMixerOutput(int nChannel, float fGlobalTime, float f
 	}
 
 	// If sounds have completed then remove them
-	listActiveSamples.remove_if([](const sCurrentlyPlayingSample &s) {return s.bFinished; });
+	listActiveSamples.remove_if([] (const sCurrentlyPlayingSample& s) {return s.bFinished; });
 
 	// The users application might be generating sound, so grab that if it exists
 	fMixerSample += onUserSoundSample(nChannel, fGlobalTime, fTimeStep);
@@ -934,20 +885,20 @@ float ConsoleGameEngine::GetMixerOutput(int nChannel, float fGlobalTime, float f
 	return onUserSoundFilter(nChannel, fGlobalTime, fMixerSample);
 }
 
-int ConsoleGameEngine::GetMouseX(){
+int ConsoleGameEngine::GetMouseX() {
 	return m_mousePosX;
 }
-int ConsoleGameEngine::GetMouseY(){
+int ConsoleGameEngine::GetMouseY() {
 	return m_mousePosY;
 }
-ConsoleGameEngine::sKeyState ConsoleGameEngine::GetMouse(int nMouseButtonID){
+ConsoleGameEngine::sKeyState ConsoleGameEngine::GetMouse(int nMouseButtonID) {
 	return m_mouse[nMouseButtonID];
 }
-bool ConsoleGameEngine::IsFocused(){
+bool ConsoleGameEngine::IsFocused() {
 	return m_bConsoleInFocus;
 }
 
-int ConsoleGameEngine::Error(const wchar_t *msg){
+int ConsoleGameEngine::Error(const wchar_t* msg) {
 	wchar_t buf[256];
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256, NULL);
 	SetConsoleActiveScreenBuffer(m_hOriginalConsole);
@@ -955,11 +906,11 @@ int ConsoleGameEngine::Error(const wchar_t *msg){
 	return 0;
 }
 
-BOOL ConsoleGameEngine::CloseHandler(DWORD evt){
+BOOL ConsoleGameEngine::CloseHandler(DWORD evt) {
 	// Note this gets called in a seperate OS thread, so it must
 	// only exit when the game has finished cleaning up, or else
 	// the process will be killed before OnUserDestroy() has finished
-	if (evt == CTRL_CLOSE_EVENT){
+	if (evt == CTRL_CLOSE_EVENT) {
 		m_bAtomActive = false;
 
 		// Wait for thread to be exited

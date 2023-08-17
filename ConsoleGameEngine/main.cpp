@@ -1,8 +1,8 @@
 #include "Game.h"
 
-int main(){
+int main() {
 	Game game;
-	game.ConstructConsole(160, 100, 8, 8);
+	game.ConstructConsole(100, 100, 4, 4);
 	game.Start();
 
 	return 0;
