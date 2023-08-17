@@ -3,7 +3,7 @@
 
 namespace cge {
 
-	enum COLOUR {
+	enum COLOR {
 		FG_BLACK = 0x0000,
 		FG_DARK_BLUE = 0x0001,
 		FG_DARK_GREEN = 0x0002,

@@ -70,31 +70,31 @@ namespace cge {
 
 		int ConstructConsole(int width, int height, int fontw, int fonth);
 
-		virtual void Draw(int x, int y, short c = 0x2588, short col = 0x000F);
+		virtual void Draw(int x, int y, short c = 0x2588, short col = COLOR::FG_WHITE);
 
-		void Fill(int x1, int y1, int x2, int y2, short c = 0x2588, short col = 0x000F);
+		void Fill(int x1, int y1, int x2, int y2, short c = 0x2588, short col = COLOR::FG_WHITE);
 
-		void DrawString(int x, int y, std::wstring c, short col = 0x000F);
+		void DrawString(int x, int y, std::wstring c, short col = COLOR::FG_WHITE);
 
-		void DrawStringAlpha(int x, int y, std::wstring c, short col = 0x000F);
+		void DrawStringAlpha(int x, int y, std::wstring c, short col = COLOR::FG_WHITE);
 
 		void Clip(int& x, int& y);
 
-		void DrawLine(int x1, int y1, int x2, int y2, short c = 0x2588, short col = 0x000F);
+		void DrawLine(int x1, int y1, int x2, int y2, short c = 0x2588, short col = COLOR::FG_WHITE);
 
-		void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = 0x000F);
+		void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = COLOR::FG_WHITE);
 
-		void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = 0x000F);
+		void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = COLOR::FG_WHITE);
 
-		void DrawCircle(int xc, int yc, int r, short c = 0x2588, short col = 0x000F);
+		void DrawCircle(int xc, int yc, int r, short c = 0x2588, short col = COLOR::FG_WHITE);
 
-		void FillCircle(int xc, int yc, int r, short c = 0x2588, short col = 0x000F);
+		void FillCircle(int xc, int yc, int r, short c = 0x2588, short col = COLOR::FG_WHITE);
 
 		void DrawSprite(int x, int y, Sprite* sprite);
 
 		void DrawPartialSprite(int x, int y, Sprite* sprite, int ox, int oy, int w, int h);
 
-		void DrawWireFrameModel(const std::vector<std::pair<float, float>>& vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1.0f, short col = FG_WHITE, short c = PIXEL_SOLID);
+		void DrawWireFrameModel(const std::vector<std::pair<float, float>>& vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1.0f, short col = COLOR::FG_WHITE, short c = PIXEL_SOLID);
 
 	public:
 		void Start();
@@ -231,7 +231,6 @@ namespace cge {
 		int GetMouseY();
 		sKeyState GetMouse(int nMouseButtonID);
 		bool IsFocused();
-
 
 	protected:
 		int Error(const wchar_t* msg);
