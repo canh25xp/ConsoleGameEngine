@@ -1,27 +1,32 @@
 #include "Car.h"
 
-int car[4][4] = {
-	0,1,1,0,
-	1,1,1,1,
-	0,1,1,0,
-	1,1,1,1
+
+int car[16][12] = {
+	1,1,0,0,3,3,3,3,0,0,1,1,
+	1,1,2,2,3,3,3,3,2,2,1,1,
+	1,1,0,0,3,3,3,3,0,0,1,1,
+	0,0,0,0,3,3,3,3,0,0,0,0,
+	0,0,3,3,3,3,3,3,3,3,0,0,
+	0,0,3,3,3,3,3,3,3,3,0,0,
+	0,0,3,3,4,4,4,4,3,3,0,0,
+	0,0,3,3,4,4,4,4,3,3,0,0,
+	0,0,3,3,4,4,4,4,3,3,0,0,
+	0,0,3,3,4,4,4,4,3,3,0,0,
+	1,1,3,3,4,4,4,4,3,3,1,1,
+	1,1,3,3,3,3,3,3,3,3,1,1,
+	1,1,3,3,3,3,3,3,3,3,1,1,
+	0,0,0,0,3,3,3,3,0,0,0,0,
+	0,0,0,0,3,3,3,3,0,0,0,0,
+	3,3,3,3,3,3,3,3,3,3,3,3
 };
 
-Point2D::Point2D(){
-	x=10;
-	y=10;
-}
 
-Point2D::Point2D(int _x, int _y){
-	x = _x;
-	y = _y;
-}
 
 Car::Car(){
 	spr_car = nullptr;
-	position = Point2D(0,0);
-	width = 4;
-	height = 4;
+	position = Point2D(10,10);
+	width = 12;
+	height = 16;
 }
 
 Car::~Car(){
@@ -29,25 +34,26 @@ Car::~Car(){
 }
 
 void Car::DrawSelf(ConsoleGameEngine* grf){
-	for (int i = 0; i < 4; i++){
-		for (int j = 0; j < 4; j++){
-			if(car[i][j])
-				grf->Draw(position.x+j, position.y+i, ' ', COLOR::BG_MAGENTA);
-			else
-				grf->Draw(position.x+j, position.y+i, ' ', COLOR::BG_BLACK);
+	for (int i = 0; i < height; i++){
+		for (int j = 0; j < width; j++){
+			switch (car[i][j]) {
+				case 0:
+					break;
+				case 1:
+					grf->Draw(position.x + j, position.y + i, ' ', CAR_TIRE);
+					break;
+				case 2:
+					grf->Draw(position.x + j, position.y + i, ' ', CAR_AXIAL);
+					break;
+				case 3:
+					grf->Draw(position.x + j, position.y + i, ' ', CAR_MAIN);
+					break;
+				case 4:
+					grf->Draw(position.x + j, position.y + i, ' ', CAR_WINDOW);
+					break;
+				default:
+					break;
+			}
 		}
 	}
-}
-
-void Car::Up(){
-	position.y += height;
-}
-void Car::Right(){
-	position.x += width;
-}
-void Car::Down(){
-	position.y += height;
-}
-void Car::Left(){
-	position.x -= width;
 }

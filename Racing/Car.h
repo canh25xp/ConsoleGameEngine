@@ -1,12 +1,6 @@
 #pragma once
 #include "ConsoleGameEngine.h"
-
-struct Point2D{
-	int x;
-	int y;
-	Point2D();
-	Point2D(int _x, int _y);
-};
+#include "Common.h"
 
 class Car{
 public:
@@ -14,15 +8,11 @@ public:
 	~Car();
 public:
 	void DrawSelf(ConsoleGameEngine* grf);
-	void Up();
-	void Right();
-	void Down();
-	void Left();
 
 private:
-	Point2D position;	//top_left of the car
 	int width;
 	int height;
 public:
+	Point2D position;	//top_left of the car
 	Sprite* spr_car;
 };

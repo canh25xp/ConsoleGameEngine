@@ -2,6 +2,7 @@
 #include <iostream>
 #include "ConsoleGameEngine.h"
 #include "Car.h"
+#include "Common.h"
 
 class Game : public ConsoleGameEngine {
 public:
@@ -15,4 +16,5 @@ protected:
 private:
 	unsigned int score;
 	Car m_car;
+	bool exit;
 };
