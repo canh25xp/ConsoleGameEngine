@@ -22,20 +22,20 @@ int car[16][12] = {
 
 
 
-Car::Car(){
+Car::Car() {
 	spr_car = nullptr;
-	position = Point2D(10,10);
+	position = Point2D(10, 10);
 	width = 12;
 	height = 16;
 }
 
-Car::~Car(){
+Car::~Car() {
 
 }
 
-void Car::DrawSelf(ConsoleGameEngine* grf){
-	for (int i = 0; i < height; i++){
-		for (int j = 0; j < width; j++){
+void Car::DrawSelf(ConsoleGameEngine* grf) {
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
 			switch (car[i][j]) {
 				case 0:
 					break;

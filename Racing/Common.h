@@ -2,9 +2,9 @@
 #include "ConsoleGameEngine.h"
 
 const COLOUR BACK_GROUND = BG_DARK_GREY;
-const COLOUR BORDER		= BG_DARK_RED;
+const COLOUR BORDER		 = BG_DARK_RED;
 
-const COLOUR CAR_TIRE	= BG_BLACK;
+const COLOUR CAR_TIRE	 = BG_BLACK;
 const COLOUR CAR_MAIN    = BG_BLUE;
 const COLOUR CAR_AXIAL   = BG_GREY;
 const COLOUR CAR_WINDOW  = BG_WHITE;

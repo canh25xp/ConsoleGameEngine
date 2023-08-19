@@ -2,7 +2,7 @@
 #include "ConsoleGameEngine.h"
 #include "Common.h"
 
-class Car{
+class Car {
 public:
 	Car();
 	~Car();
