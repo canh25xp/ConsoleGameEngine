@@ -1,7 +1,5 @@
 #include "ConsoleGameEngine.h"
 
-using namespace cge;
-
 ConsoleGameEngine::ConsoleGameEngine() {
 	m_nScreenWidth = 80;
 	m_nScreenHeight = 30;

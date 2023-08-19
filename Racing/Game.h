@@ -3,7 +3,7 @@
 #include "ConsoleGameEngine.h"
 #include "Car.h"
 
-class Game : public cge::ConsoleGameEngine {
+class Game : public ConsoleGameEngine {
 public:
 	Game();
 protected:

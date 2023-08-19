@@ -32,7 +32,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 }
 
 void Game::ClearScreen(){
-	Fill(0,0 , ScreenWidth(), ScreenHeight(), ' ', cge::BG_BLACK);
+	Fill(0,0 , ScreenWidth(), ScreenHeight(), ' ', BG_BLACK);
 }
 
 void Game::DrawBorder(){
@@ -44,7 +44,7 @@ void Game::DrawBorder(){
 
 	for (int d = 0; d < 4; d++){
 		while(x >= 0 && x < ScreenWidth() && y >= 0 && y < ScreenHeight()){
-			Draw(x, y, ' ', cge::BG_DARK_RED);
+			Draw(x, y, ' ', BG_DARK_RED);
 			x += dx[d];
 			y += dy[d];
 		}

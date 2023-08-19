@@ -13,7 +13,7 @@ public:
 	Car();
 	~Car();
 public:
-	void DrawSelf(cge::ConsoleGameEngine* grf);
+	void DrawSelf(ConsoleGameEngine* grf);
 	void Up();
 	void Right();
 	void Down();
@@ -25,5 +25,5 @@ private:
 	int height;
 	char dimension[16];
 public:
-	cge::Sprite* spr_car;
+	Sprite* spr_car;
 };

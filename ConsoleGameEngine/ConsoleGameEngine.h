@@ -58,207 +58,203 @@ blocks - but you can draw any unicode character, using any of the colours listed
 
 #include "Sprite.h"
 
-namespace cge {
+class ConsoleGameEngine {
+public:
+	ConsoleGameEngine();
 
-	class ConsoleGameEngine {
+	~ConsoleGameEngine();
+
+	void EnableSound();
+
+	int ConstructConsole(int width, int height, int fontw, int fonth);
+
+	virtual void Draw(int x, int y, short c = 0x2588, short col = COLOR::FG_WHITE);
+
+	void Fill(int x1, int y1, int x2, int y2, short c = 0x2588, short col = COLOR::FG_WHITE);
+
+	void DrawString(int x, int y, std::wstring c, short col = COLOR::FG_WHITE);
+
+	void DrawStringAlpha(int x, int y, std::wstring c, short col = COLOR::FG_WHITE);
+
+	void Clip(int& x, int& y);
+
+	void DrawLine(int x1, int y1, int x2, int y2, short c = 0x2588, short col = COLOR::FG_WHITE);
+
+	void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = COLOR::FG_WHITE);
+
+	void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = COLOR::FG_WHITE);
+
+	void DrawCircle(int xc, int yc, int r, short c = 0x2588, short col = COLOR::FG_WHITE);
+
+	void FillCircle(int xc, int yc, int r, short c = 0x2588, short col = COLOR::FG_WHITE);
+
+	void DrawSprite(int x, int y, Sprite* sprite);
+
+	void DrawPartialSprite(int x, int y, Sprite* sprite, int ox, int oy, int w, int h);
+
+	void DrawWireFrameModel(const std::vector<std::pair<float, float>>& vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1.0f, short col = COLOR::FG_WHITE, short c = PIXEL_SOLID);
+
+public:
+	void Start();
+
+	int ScreenWidth();
+
+	int ScreenHeight();
+
+private:
+	void GameThread();
+
+public:
+	// User MUST OVERRIDE THESE!!
+	virtual bool OnUserCreate() = 0;
+	virtual bool OnUserUpdate(float fElapsedTime) = 0;
+
+	// Optional for clean up 
+	virtual bool OnUserDestroy();
+
+	// Audio Engine =====================================================================
+protected:
+	class AudioSample {
 	public:
-		ConsoleGameEngine();
+		AudioSample();
 
-		~ConsoleGameEngine();
+		AudioSample(std::wstring sWavFile);
 
-		void EnableSound();
+		WAVEFORMATEX wavHeader;
 
-		int ConstructConsole(int width, int height, int fontw, int fonth);
-
-		virtual void Draw(int x, int y, short c = 0x2588, short col = COLOR::FG_WHITE);
-
-		void Fill(int x1, int y1, int x2, int y2, short c = 0x2588, short col = COLOR::FG_WHITE);
-
-		void DrawString(int x, int y, std::wstring c, short col = COLOR::FG_WHITE);
-
-		void DrawStringAlpha(int x, int y, std::wstring c, short col = COLOR::FG_WHITE);
-
-		void Clip(int& x, int& y);
-
-		void DrawLine(int x1, int y1, int x2, int y2, short c = 0x2588, short col = COLOR::FG_WHITE);
-
-		void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = COLOR::FG_WHITE);
-
-		void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = COLOR::FG_WHITE);
-
-		void DrawCircle(int xc, int yc, int r, short c = 0x2588, short col = COLOR::FG_WHITE);
-
-		void FillCircle(int xc, int yc, int r, short c = 0x2588, short col = COLOR::FG_WHITE);
-
-		void DrawSprite(int x, int y, Sprite* sprite);
-
-		void DrawPartialSprite(int x, int y, Sprite* sprite, int ox, int oy, int w, int h);
-
-		void DrawWireFrameModel(const std::vector<std::pair<float, float>>& vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1.0f, short col = COLOR::FG_WHITE, short c = PIXEL_SOLID);
-
-	public:
-		void Start();
-
-		int ScreenWidth();
-
-		int ScreenHeight();
-
-	private:
-		void GameThread();
-
-	public:
-		// User MUST OVERRIDE THESE!!
-		virtual bool OnUserCreate() = 0;
-		virtual bool OnUserUpdate(float fElapsedTime) = 0;
-
-		// Optional for clean up 
-		virtual bool OnUserDestroy();
-
-		// Audio Engine =====================================================================
-	protected:
-		class AudioSample {
-		public:
-			AudioSample();
-
-			AudioSample(std::wstring sWavFile);
-
-			WAVEFORMATEX wavHeader;
-
-			float* fSample;	//nullptr
-			long nSamples;		//0
-			int nChannels;		//0
-			bool bSampleValid;	//false
-		};
-
-		// This vector holds all loaded sound samples in memory
-		std::vector<AudioSample> vecAudioSamples;
-
-		// This structure represents a sound that is currently playing. It only
-		// holds the sound ID and where this instance of it is up to for its
-		// current playback
-		struct sCurrentlyPlayingSample {
-			int nAudioSampleID;		//0
-			long nSamplePosition;	//0
-			bool bFinished;			//false
-			bool bLoop;				//false
-		};
-
-		std::list<sCurrentlyPlayingSample> listActiveSamples;
-
-		// Load a 16-bit WAVE file @ 44100Hz ONLY into memory. A sample ID
-		// number is returned if successful, otherwise -1
-		unsigned int LoadAudioSample(std::wstring sWavFile);
-
-		// Add sample 'id' to the mixers sounds to play list
-		void PlaySample(int id, bool bLoop = false);
-
-		void StopSample(int id);
-
-		// The audio system uses by default a specific wave format
-		bool CreateAudio(unsigned int nSampleRate = 44100, unsigned int nChannels = 1, unsigned int nBlocks = 8, unsigned int nBlockSamples = 512);
-
-		// Stop and clean up audio system
-		bool DestroyAudio();
-
-		// Handler for soundcard request for more data
-		void waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwParam1, DWORD dwParam2);
-
-		// Static wrapper for sound card handler
-		static void CALLBACK waveOutProcWrap(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
-
-		// Audio thread. This loop responds to requests from the soundcard to fill 'blocks'
-		// with audio data. If no requests are available it goes dormant until the sound
-		// card is ready for more data. The block is fille by the "user" in some manner
-		// and then issued to the soundcard.
-		void AudioThread();
-
-		// Overridden by user if they want to generate sound in real-time
-		virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep);
-
-		// Overriden by user if they want to manipulate the sound before it is played
-		virtual float onUserSoundFilter(int nChannel, float fGlobalTime, float fSample);
-
-		// The Sound Mixer - If the user wants to play many sounds simultaneously, and
-		// perhaps the same sound overlapping itself, then you need a mixer, which
-		// takes input from all sound sources for that audio frame. This mixer maintains
-		// a list of sound locations for all concurrently playing audio samples. Instead
-		// of duplicating audio data, we simply store the fact that a sound sample is in
-		// use and an offset into its sample data. As time progresses we update this offset
-		// until it is beyound the length of the sound sample it is attached to. At this
-		// point we remove the playing souind from the list.
-		//
-		// Additionally, the users application may want to generate sound instead of just
-		// playing audio clips (think a synthesizer for example) in whcih case we also
-		// provide an "onUser..." event to allow the user to return a sound for that point
-		// in time.
-		//
-		// Finally, before the sound is issued to the operating system for performing, the
-		// user gets one final chance to "filter" the sound, perhaps changing the volume
-		// or adding funky effects
-		float GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep);
-
-		unsigned int m_nSampleRate;
-		unsigned int m_nChannels;
-		unsigned int m_nBlockCount;
-		unsigned int m_nBlockSamples;
-		unsigned int m_nBlockCurrent;
-
-		short* m_pBlockMemory;		//nullptr
-		WAVEHDR* m_pWaveHeaders;	//nullptr
-		HWAVEOUT m_hwDevice;		//nullptr
-
-		std::thread m_AudioThread;
-		std::atomic<bool> m_bAudioThreadActive;		//false
-		std::atomic<unsigned int> m_nBlockFree;		//0
-		std::condition_variable m_cvBlockNotZero;
-		std::mutex m_muxBlockNotZero;
-		std::atomic<float> m_fGlobalTime;			//0.0f
-
-	protected:
-
-		struct sKeyState {
-			bool bPressed;
-			bool bReleased;
-			bool bHeld;
-		} m_keys[256], m_mouse[5];
-
-		int m_mousePosX;
-		int m_mousePosY;
-
-	public:
-		sKeyState GetKey;
-		int GetMouseX();
-		int GetMouseY();
-		sKeyState GetMouse(int nMouseButtonID);
-		bool IsFocused();
-
-	protected:
-		int Error(const wchar_t* msg);
-
-		static BOOL CloseHandler(DWORD evt);
-
-	protected:
-		int m_nScreenWidth;
-		int m_nScreenHeight;
-		CHAR_INFO* m_bufScreen;
-		std::wstring m_sAppName;
-		HANDLE m_hOriginalConsole;
-		CONSOLE_SCREEN_BUFFER_INFO m_OriginalConsoleInfo;
-		HANDLE m_hConsole;
-		HANDLE m_hConsoleIn;
-		SMALL_RECT m_rectWindow;
-		short m_keyOldState[256];	//0
-		short m_keyNewState[256];	//0
-		bool m_mouseOldState[5];	//0
-		bool m_mouseNewState[5];	//0
-		bool m_bConsoleInFocus;		//true
-		bool m_bEnableSound;		//false
-
-		// These need to be static because of the OnDestroy call the OS may make. The OS
-		// spawns a special thread just for that
-		static std::atomic<bool> m_bAtomActive;
-		static std::condition_variable m_cvGameFinished;
-		static std::mutex m_muxGame;
+		float* fSample;	//nullptr
+		long nSamples;		//0
+		int nChannels;		//0
+		bool bSampleValid;	//false
 	};
 
-}
+	// This vector holds all loaded sound samples in memory
+	std::vector<AudioSample> vecAudioSamples;
+
+	// This structure represents a sound that is currently playing. It only
+	// holds the sound ID and where this instance of it is up to for its
+	// current playback
+	struct sCurrentlyPlayingSample {
+		int nAudioSampleID;		//0
+		long nSamplePosition;	//0
+		bool bFinished;			//false
+		bool bLoop;				//false
+	};
+
+	std::list<sCurrentlyPlayingSample> listActiveSamples;
+
+	// Load a 16-bit WAVE file @ 44100Hz ONLY into memory. A sample ID
+	// number is returned if successful, otherwise -1
+	unsigned int LoadAudioSample(std::wstring sWavFile);
+
+	// Add sample 'id' to the mixers sounds to play list
+	void PlaySample(int id, bool bLoop = false);
+
+	void StopSample(int id);
+
+	// The audio system uses by default a specific wave format
+	bool CreateAudio(unsigned int nSampleRate = 44100, unsigned int nChannels = 1, unsigned int nBlocks = 8, unsigned int nBlockSamples = 512);
+
+	// Stop and clean up audio system
+	bool DestroyAudio();
+
+	// Handler for soundcard request for more data
+	void waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwParam1, DWORD dwParam2);
+
+	// Static wrapper for sound card handler
+	static void CALLBACK waveOutProcWrap(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+
+	// Audio thread. This loop responds to requests from the soundcard to fill 'blocks'
+	// with audio data. If no requests are available it goes dormant until the sound
+	// card is ready for more data. The block is fille by the "user" in some manner
+	// and then issued to the soundcard.
+	void AudioThread();
+
+	// Overridden by user if they want to generate sound in real-time
+	virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep);
+
+	// Overriden by user if they want to manipulate the sound before it is played
+	virtual float onUserSoundFilter(int nChannel, float fGlobalTime, float fSample);
+
+	// The Sound Mixer - If the user wants to play many sounds simultaneously, and
+	// perhaps the same sound overlapping itself, then you need a mixer, which
+	// takes input from all sound sources for that audio frame. This mixer maintains
+	// a list of sound locations for all concurrently playing audio samples. Instead
+	// of duplicating audio data, we simply store the fact that a sound sample is in
+	// use and an offset into its sample data. As time progresses we update this offset
+	// until it is beyound the length of the sound sample it is attached to. At this
+	// point we remove the playing souind from the list.
+	//
+	// Additionally, the users application may want to generate sound instead of just
+	// playing audio clips (think a synthesizer for example) in whcih case we also
+	// provide an "onUser..." event to allow the user to return a sound for that point
+	// in time.
+	//
+	// Finally, before the sound is issued to the operating system for performing, the
+	// user gets one final chance to "filter" the sound, perhaps changing the volume
+	// or adding funky effects
+	float GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep);
+
+	unsigned int m_nSampleRate;
+	unsigned int m_nChannels;
+	unsigned int m_nBlockCount;
+	unsigned int m_nBlockSamples;
+	unsigned int m_nBlockCurrent;
+
+	short* m_pBlockMemory;		//nullptr
+	WAVEHDR* m_pWaveHeaders;	//nullptr
+	HWAVEOUT m_hwDevice;		//nullptr
+
+	std::thread m_AudioThread;
+	std::atomic<bool> m_bAudioThreadActive;		//false
+	std::atomic<unsigned int> m_nBlockFree;		//0
+	std::condition_variable m_cvBlockNotZero;
+	std::mutex m_muxBlockNotZero;
+	std::atomic<float> m_fGlobalTime;			//0.0f
+
+protected:
+
+	struct sKeyState {
+		bool bPressed;
+		bool bReleased;
+		bool bHeld;
+	} m_keys[256], m_mouse[5];
+
+	int m_mousePosX;
+	int m_mousePosY;
+
+public:
+	sKeyState GetKey;
+	int GetMouseX();
+	int GetMouseY();
+	sKeyState GetMouse(int nMouseButtonID);
+	bool IsFocused();
+
+protected:
+	int Error(const wchar_t* msg);
+
+	static BOOL CloseHandler(DWORD evt);
+
+protected:
+	int m_nScreenWidth;
+	int m_nScreenHeight;
+	CHAR_INFO* m_bufScreen;
+	std::wstring m_sAppName;
+	HANDLE m_hOriginalConsole;
+	CONSOLE_SCREEN_BUFFER_INFO m_OriginalConsoleInfo;
+	HANDLE m_hConsole;
+	HANDLE m_hConsoleIn;
+	SMALL_RECT m_rectWindow;
+	short m_keyOldState[256];	//0
+	short m_keyNewState[256];	//0
+	bool m_mouseOldState[5];	//0
+	bool m_mouseNewState[5];	//0
+	bool m_bConsoleInFocus;		//true
+	bool m_bEnableSound;		//false
+
+	// These need to be static because of the OnDestroy call the OS may make. The OS
+	// spawns a special thread just for that
+	static std::atomic<bool> m_bAtomActive;
+	static std::condition_variable m_cvGameFinished;
+	static std::mutex m_muxGame;
+};

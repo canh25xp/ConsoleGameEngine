@@ -1,7 +1,5 @@
 #include "Sprite.h"
 
-using namespace cge;
-
 Sprite::Sprite() {
 	nWidth = 0;
 	nHeight = 0;
