@@ -32,9 +32,9 @@ void Car::DrawSelf(cge::ConsoleGameEngine* grf){
 	for (int i = 0; i < 4; i++){
 		for (int j = 0; j < 4; j++){
 			if(car[i][j])
-				grf->Draw(position.x+j, position.y+i, ' ', cge::COLOUR::BG_MAGENTA);
+				grf->Draw(position.x+j, position.y+i, ' ', cge::COLOR::BG_MAGENTA);
 			else
-				grf->Draw(position.x+j, position.y+i, ' ', cge::COLOUR::BG_BLACK);
+				grf->Draw(position.x+j, position.y+i, ' ', cge::COLOR::BG_BLACK);
 		}
 	}
 }
