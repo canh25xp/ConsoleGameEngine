@@ -23,7 +23,6 @@ private:
 	Point2D position;	//top_left of the car
 	int width;
 	int height;
-	char dimension[16];
 public:
 	Sprite* spr_car;
 };
