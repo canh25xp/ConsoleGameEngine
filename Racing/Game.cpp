@@ -20,37 +20,32 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		m_car.position.MoveUp(4);
 	}
 
-	if(m_keys[VK_RIGHT].bPressed){
-		m_car.position.MoveRight(4);
+void Game::ClearScreen() {
+	Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_BLANK, BACK_GROUND);
 	}
 
-	if(m_keys[VK_DOWN].bPressed){
-		m_car.position.MoveDown(4);
+void Game::UpdateScreen() {
+	WriteConsoleOutput(m_hConsole, m_bufScreen, m_bufferSize, m_bufferCoord, &m_rectWindow);
 	}
 
-	if(m_keys[VK_LEFT].bPressed){
-		m_car.position.MoveLeft(4);
+void Game::RainbowFill() {
+	for (size_t i = 0; i < ScreenWidth(); i++) {
+		for (size_t j = 0; j < ScreenHeight(); j++) {
+			Draw(i, j, PIXEL_BLANK, (i + j) % 255);
+		}
 	}
-
-	ClearScreen();
-	//wchar_t messeage[256];
-	//swprintf_s(messeage, 256, L"Elapse Time = %f", fElapsedTime);
-	//DrawString(30, 30, messeage);
-	DrawBorder();
-	m_car.DrawSelf(this);
-	return true;
 }
 
-void Game::ClearScreen(){
-	Fill(0,0 , ScreenWidth(), ScreenHeight(), PIXEL_BLANK, BACK_GROUND);
+void Game::WaitKey(int vKey) {
+	while ((0x8000 & GetAsyncKeyState(vKey)) == 0);
 }
 
-void Game::DrawBorder(){
-	int x=0;
-	int y=0;
+void Game::DrawBorder() {
+	int x = 0;
+	int y = 0;
 
-	for (int d = 0; d < 4; d++){
-		while(x >= 0 && x < ScreenWidth() && y >= 0 && y < ScreenHeight()){
+	for (int d = 0; d < 4; d++) {
+		while (x >= 0 && x < ScreenWidth() && y >= 0 && y < ScreenHeight()) {
 			Draw(x, y, PIXEL_BLANK, BORDER);
 			x += dx[d];
 			y += dy[d];

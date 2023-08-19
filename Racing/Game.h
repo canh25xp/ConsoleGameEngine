@@ -12,6 +12,9 @@ protected:
 	bool OnUserUpdate(float fElapsedTime) override;
 	void DrawBorder();
 	void ClearScreen();
+	void UpdateScreen();
+	void RainbowFill();
+	void WaitKey(int vKey);
 
 private:
 	unsigned int score;
