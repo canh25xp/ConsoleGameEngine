@@ -576,7 +576,7 @@ void ConsoleGameEngine::GameThread() {
 
 			// Update Title & Present Screen Buffer
 			wchar_t s[256];
-			swprintf_s(s, 256, L"Console Game Engine - %s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
+			swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 			SetConsoleTitle(s);
 			COORD BufferSize;
 			BufferSize.X = (short) m_nScreenWidth;
