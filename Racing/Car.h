@@ -14,5 +14,5 @@ private:
 	int height;
 public:
 	Point2D position;	//top_left of the car
-	Sprite* spr_car;
+	Sprite* spr;
 };

@@ -2,12 +2,12 @@
 
 Game::Game() {
 	m_sAppName = L"Racing";
-	m_car.spr_car = nullptr;
+	m_car.spr = nullptr;
 	exit = false;
 }
 
 bool Game::OnUserCreate() {
-	m_car.spr_car = new Sprite(L"assets/car1.spr");
+	m_car.spr = new Sprite(L"assets/car1.spr");
 	score = 0;
 	return true;
 }
@@ -20,13 +20,33 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		m_car.position.MoveUp(4);
 	}
 
+	if(m_keys[VK_RIGHT].bPressed){
+		m_car.position.MoveRight(4);
+	}
+
+	if(m_keys[VK_DOWN].bPressed){
+		m_car.position.MoveDown(4);
+	}
+
+	if(m_keys[VK_LEFT].bPressed){
+		m_car.position.MoveLeft(4);
+	}
+
+	ClearScreen();
+	DrawBorder();
+	m_car.DrawSelf(this);
+
+	//DrawSprite(0, 0, m_car.spr);
+	return true;
+}
+
 void Game::ClearScreen() {
 	Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_BLANK, BACK_GROUND);
-	}
+}
 
 void Game::UpdateScreen() {
 	WriteConsoleOutput(m_hConsole, m_bufScreen, m_bufferSize, m_bufferCoord, &m_rectWindow);
-	}
+}
 
 void Game::RainbowFill() {
 	for (size_t i = 0; i < ScreenWidth(); i++) {

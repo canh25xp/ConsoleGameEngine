@@ -23,7 +23,7 @@ int car[16][12] = {
 
 
 Car::Car() {
-	spr_car = nullptr;
+	spr = nullptr;
 	position = Point2D(10, 10);
 	width = 12;
 	height = 16;
