@@ -313,6 +313,9 @@ protected:
 	static BOOL CloseHandler(DWORD evt);
 
 protected:
+	COORD m_bufferCoord;
+	COORD m_bufferSize;
+
 	int m_nScreenWidth;
 	int m_nScreenHeight;
 	CHAR_INFO* m_bufScreen;

@@ -29,6 +29,9 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 	m_nScreenWidth = width;
 	m_nScreenHeight = height;
 
+	m_bufferSize = COORD {(short) m_nScreenWidth, (short) m_nScreenHeight};
+	m_bufferCoord = COORD {0,0};
+
 	// Update 13/09/2017 - It seems that the console behaves differently on some systems
 	// and I'm unsure why this is. It could be to do with windows default settings, or
 	// screen resolutions, or system languages. Unfortunately, MSDN does not offer much
@@ -576,13 +579,7 @@ void ConsoleGameEngine::GameThread() {
 			wchar_t s[256];
 			swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 			SetConsoleTitle(s);
-			COORD BufferSize;
-			BufferSize.X = (short) m_nScreenWidth;
-			BufferSize.Y = (short) m_nScreenHeight;
-			COORD BufferCoord;
-			BufferCoord.X = 0;
-			BufferCoord.Y = 0;
-			WriteConsoleOutput(m_hConsole, m_bufScreen, BufferSize, BufferCoord, &m_rectWindow);
+			WriteConsoleOutput(m_hConsole, m_bufScreen, m_bufferSize, m_bufferCoord, &m_rectWindow);
 		}
 
 		if (m_bEnableSound) {
