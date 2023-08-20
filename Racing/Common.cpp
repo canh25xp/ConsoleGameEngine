@@ -1,7 +1,5 @@
 #include "Common.h"
 
-using namespace myGame;
-
 Point::Point() {
 	x = 0;
 	y = 0;
@@ -28,36 +26,52 @@ void Point::MoveLeft(int distance) {
 	this->x -= distance;
 }
 
-Rectangle::Rectangle() {
+Rect::Rect() {
 	x = 0;
 	y = 0;
 	width = 1;
 	height = 1;
 }
 
-Rectangle::Rectangle(int x, int y, int width, int height) {
+Rect::Rect(int x, int y, int width, int height) {
 	this->x = x;
 	this->y = y;
 	this->width = width;
 	this->height = height;
-
 }
 
-Rectangle::~Rectangle() {
+Rect::~Rect() {
 }
 
-Point Rectangle::TopLeft() {
+int Rect::Top() const {
+	return this->y;
+}
+
+int Rect::Bottom() const {
+	return (this->y+height);
+}
+
+int Rect::Left() const {
+	return this->x;
+}
+
+int Rect::Right() const {
+	return (this->x + width);
+}
+
+
+Point Rect::TopLeft() const{
 	return Point(this->x, this->y);
 }
 
-Point Rectangle::TopRight() {
+Point Rect::TopRight() const{
 	return Point(this->x + width, this->y);
 }
 
-Point Rectangle::BottomLeft() {
+Point Rect::BottomLeft() const {
 	return Point(this->x, this->y+height);
 }
 
-Point Rectangle::BottomRight() {
+Point Rect::BottomRight() const {
 	return Point(this->x + width, this->y + height);
 }

@@ -8,40 +8,43 @@ const COLOUR BORDER		 = BG_DARK_RED;
 const int dx[] = {1,0,-1,0};
 const int dy[] = {0,1,0,-1};
 
-namespace myGame {
-	class Point {
-	public:
-		int x;
-		int y;
+const int BORDER_OFFSET = 20;
 
-	public:
-		Point();
-		Point(int _x, int _y);
+class Point {
+public:
+	int x;
+	int y;
 
-	public:
+public:
+	Point();
+	Point(int _x, int _y);
 
-		void MoveRight(int distance = 1);
-		void MoveDown(int distance = 1);
-		void MoveLeft(int distance = 1);
-		void MoveUp(int distance = 1);
-	};
+public:
 
-	class Rectangle : public Point {
-	public:
-		int width;
-		int height;
+	void MoveRight(int distance = 1);
+	void MoveDown(int distance = 1);
+	void MoveLeft(int distance = 1);
+	void MoveUp(int distance = 1);
+};
 
-	public:
-		Rectangle();
-		Rectangle(int x, int y, int width, int height);
-		~Rectangle();
+class Rect : public Point {
+public:
+	int width;
+	int height;
 
-	public:
-		Point TopLeft();
-		Point TopRight();
-		Point BottomLeft();
-		Point BottomRight();
+public:
+	Rect();
+	Rect(int x, int y, int width, int height);
+	~Rect();
 
-		void Clip();
-	};
-}
+public:
+	int Top() const;
+	int Bottom() const;
+	int Left() const;
+	int Right() const;
+
+	Point TopLeft() const;
+	Point TopRight() const;
+	Point BottomLeft() const;
+	Point BottomRight() const;
+};
