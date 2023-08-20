@@ -29,8 +29,8 @@ void Point::MoveLeft(int distance) {
 Rect::Rect() {
 	x = 0;
 	y = 0;
-	width = 1;
-	height = 1;
+	width = 0;
+	height = 0;
 }
 
 Rect::Rect(int x, int y, int width, int height) {
@@ -41,6 +41,7 @@ Rect::Rect(int x, int y, int width, int height) {
 }
 
 Rect::~Rect() {
+	//wtf should go here
 }
 
 int Rect::Top() const {
@@ -48,7 +49,7 @@ int Rect::Top() const {
 }
 
 int Rect::Bottom() const {
-	return (this->y+height);
+	return (this->y + height - 1);
 }
 
 int Rect::Left() const {
@@ -56,7 +57,7 @@ int Rect::Left() const {
 }
 
 int Rect::Right() const {
-	return (this->x + width);
+	return (this->x + width - 1);
 }
 
 
@@ -65,13 +66,58 @@ Point Rect::TopLeft() const{
 }
 
 Point Rect::TopRight() const{
-	return Point(this->x + width, this->y);
+	return Point(this->x + width - 1, this->y);
 }
 
 Point Rect::BottomLeft() const {
-	return Point(this->x, this->y+height);
+	return Point(this->x, this->y + height - 1);
 }
 
 Point Rect::BottomRight() const {
-	return Point(this->x + width, this->y + height);
+	return Point(this->x + width - 1, this->y + height - 1);
+}
+
+void Rect::ClipTo(const Rect& boundary) {
+	if (this->x < boundary.Left())
+		this->x = boundary.Left();
+
+	if (this->x > boundary.Right())
+		this->x = boundary.Right();
+
+	if (this->y < boundary.Top())
+		this->y = boundary.Top();
+
+	if (this->y > boundary.Bottom())
+		this->y = boundary.Bottom();
+}
+
+void Rect::ClipTo(const Rect& boundary, int offset) {
+	if (this->x < boundary.Left() + offset)
+		this->x = boundary.Left() + offset;
+
+	if (this->x > boundary.Right() - offset)
+		this->x = boundary.Right() - offset - 1;
+
+	if (this->y < boundary.Top() + offset)
+		this->y = boundary.Top() + offset;
+
+	if (this->y > boundary.Bottom() - offset)
+		this->y = boundary.Bottom() - offset - 1;
+}
+
+void Rect::ClipToTight(const Rect& boundary) {
+	if (this->x < boundary.Left())
+		this->x = boundary.Left();
+
+	if (this->Right() > boundary.Right())
+		this->x = boundary.Right() - width + 1;
+
+	if (this->y < boundary.Top())
+		this->y = boundary.Top();
+
+	if (this->Bottom() > boundary.Bottom())
+		this->y = boundary.Bottom()  - height;
+}
+
+void Rect::ClipToTight(const Rect& boundary, int offset) {
 }

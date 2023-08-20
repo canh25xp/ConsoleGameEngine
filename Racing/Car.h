@@ -2,7 +2,7 @@
 #include "ConsoleGameEngine.h"
 #include "Common.h"
 
-class Car {
+class Car : public Rect {
 public:
 	Car();
 	Car(std::wstring sFile);
@@ -10,13 +10,10 @@ public:
 
 public:
 	void LoadSprite(std::wstring sFile = L"assets/car1.spr");
-	void ClipTo(const Rect& boundary);
-	void ClipTo(const Rect& boundary, int offset);
-	void ClipToTight(const Rect& boundary);
-	void ClipToTight(const Rect& boundary, int offset);
+	int getWidth() const;
+	int getHeight() const;
+	void drawSelf(ConsoleGameEngine* engine) const;
 
-
-public:
-	Point position;	//top_left of the car
+private:
 	Sprite* spr;
 };

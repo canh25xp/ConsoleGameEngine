@@ -20,7 +20,6 @@ public:
 	Point(int _x, int _y);
 
 public:
-
 	void MoveRight(int distance = 1);
 	void MoveDown(int distance = 1);
 	void MoveLeft(int distance = 1);
@@ -47,4 +46,9 @@ public:
 	Point TopRight() const;
 	Point BottomLeft() const;
 	Point BottomRight() const;
+
+	void ClipTo(const Rect& boundary);
+	void ClipTo(const Rect& boundary, int offset);
+	void ClipToTight(const Rect& boundary);
+	void ClipToTight(const Rect& boundary, int offset);
 };
