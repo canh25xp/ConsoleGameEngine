@@ -30,14 +30,11 @@
     <ClCompile Include="Map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
+    <ClCompile Include="Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Car.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -50,5 +47,23 @@
     <ClInclude Include="Map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\car1.spr" />
+    <None Include="assets\car2.spr" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="racing.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\Car1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\Car2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

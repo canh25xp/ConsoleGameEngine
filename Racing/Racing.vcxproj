@@ -168,6 +168,10 @@
     <None Include="assets\car1.spr" />
     <None Include="assets\car2.spr" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\Car1.png" />
+    <Image Include="assets\Car2.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

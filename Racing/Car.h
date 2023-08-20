@@ -6,13 +6,11 @@ class Car {
 public:
 	Car();
 	~Car();
-public:
-	void DrawSelf(ConsoleGameEngine* grf);
 
-private:
-	int width;
-	int height;
 public:
-	Point2D position;	//top_left of the car
+	void LoadSprite(std::wstring sFile = L"assets/car1.spr");
+
+public:
+	myGame::Point position;	//top_left of the car
 	Sprite* spr;
 };

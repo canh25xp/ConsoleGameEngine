@@ -10,14 +10,14 @@ public:
 protected:
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
+
+public:
 	void DrawBorder();
 	void ClearScreen();
 	void UpdateScreen();
 	void RainbowFill();
 	void WaitKey(int vKey);
-
 private:
-	unsigned int score;
-	Car m_car;
-	bool exit;
+	myGame::Rectangle* m_border;
+	Car* m_car;
 };
