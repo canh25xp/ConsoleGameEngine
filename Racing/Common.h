@@ -11,7 +11,7 @@ const int dy[] = {0,1,0,-1};
 const int BORDER_OFFSET = 20;
 
 class Point {
-public:
+protected:
 	int x;
 	int y;
 
@@ -27,7 +27,7 @@ public:
 };
 
 class Rect : public Point {
-public:
+protected:
 	int width;
 	int height;
 
@@ -41,6 +41,8 @@ public:
 	int Bottom() const;
 	int Left() const;
 	int Right() const;
+	int Width() const;
+	int Height() const;
 
 	Point TopLeft() const;
 	Point TopRight() const;

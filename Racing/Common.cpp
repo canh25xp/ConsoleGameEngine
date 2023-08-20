@@ -60,6 +60,14 @@ int Rect::Right() const {
 	return (this->x + width - 1);
 }
 
+int Rect::Width() const {
+	return this->width;
+}
+
+int Rect::Height() const {
+	return this->height;
+}
+
 
 Point Rect::TopLeft() const{
 	return Point(this->x, this->y);
