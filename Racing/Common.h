@@ -8,16 +8,16 @@ const COLOUR BORDER		 = BG_DARK_RED;
 const int dx[] = {1,0,-1,0};
 const int dy[] = {0,1,0,-1};
 
-const int BORDER_OFFSET = 20;
+const int BORDER_OFFSET = 10;
 
 class Point {
-protected:
-	int x;
-	int y;
-
 public:
 	Point();
 	Point(int _x, int _y);
+
+protected:
+	int x;
+	int y;
 
 public:
 	void MoveRight(int distance = 1);
@@ -27,14 +27,14 @@ public:
 };
 
 class Rect : public Point {
-protected:
-	int width;
-	int height;
-
 public:
 	Rect();
 	Rect(int x, int y, int width, int height);
 	~Rect();
+
+protected:
+	int width;
+	int height;
 
 public:
 	int Top() const;
@@ -53,4 +53,7 @@ public:
 	void ClipTo(const Rect& boundary, int offset);
 	void ClipToTight(const Rect& boundary);
 	void ClipToTight(const Rect& boundary, int offset);
+	void SetPosition(int x, int y);
+	void drawSelf(ConsoleGameEngine* engine) const;
+
 };

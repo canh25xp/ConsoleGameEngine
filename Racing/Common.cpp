@@ -104,13 +104,13 @@ void Rect::ClipTo(const Rect& boundary, int offset) {
 		this->x = boundary.Left() + offset;
 
 	if (this->x > boundary.Right() - offset)
-		this->x = boundary.Right() - offset - 1;
+		this->x = boundary.Right() - offset;
 
 	if (this->y < boundary.Top() + offset)
 		this->y = boundary.Top() + offset;
 
 	if (this->y > boundary.Bottom() - offset)
-		this->y = boundary.Bottom() - offset - 1;
+		this->y = boundary.Bottom() - offset;
 }
 
 void Rect::ClipToTight(const Rect& boundary) {
@@ -124,8 +124,30 @@ void Rect::ClipToTight(const Rect& boundary) {
 		this->y = boundary.Top();
 
 	if (this->Bottom() > boundary.Bottom())
-		this->y = boundary.Bottom()  - height;
+		this->y = boundary.Bottom()  - height + 1;
 }
 
 void Rect::ClipToTight(const Rect& boundary, int offset) {
+}
+
+void Rect::SetPosition(int x, int y) {
+	this->x = x;
+	this->y = y;
+}
+
+void Rect::drawSelf(ConsoleGameEngine* engine) const {
+	int x = this->x;
+	int y = this->y;
+
+	for (int d = 0; d < 4; d++) {
+		while (x >= this->Left() && x <= this->Right() && y >= this->Top() && y <= this->Bottom()) {
+			engine->Draw(x, y, PIXEL_BLANK, BORDER);
+			x += dx[d];
+			y += dy[d];
+		}
+		x -= dx[d];
+		y -= dy[d];
+
+		continue;
+	}
 }

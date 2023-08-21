@@ -9,7 +9,6 @@ public:
 	~Car();
 
 public:
-	void LoadSprite(std::wstring sFile = L"assets/car1.spr");
 	int getWidth() const;
 	int getHeight() const;
 	void drawSelf(ConsoleGameEngine* engine) const;

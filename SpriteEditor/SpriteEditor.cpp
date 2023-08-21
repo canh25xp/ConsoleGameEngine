@@ -82,7 +82,7 @@ protected:
 	// Called by olcConsoleGameEngine
 	virtual bool OnUserCreate() {
 		sprite = new olcSprite(12, 16);
-		sCurrentSpriteFile = L"frog.spr";
+		sCurrentSpriteFile = L"title.spr";
 
 		return true;
 	}
