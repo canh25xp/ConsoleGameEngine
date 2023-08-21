@@ -2,6 +2,10 @@
 #include "ConsoleGameEngine.h"
 #include "Common.h"
 
+enum Direction{
+	Up, Right, Down, Left
+};
+
 class Car : public Rect {
 public:
 	Car();
@@ -9,10 +13,15 @@ public:
 	~Car();
 
 public:
-	int getWidth() const;
-	int getHeight() const;
-	void drawSelf(ConsoleGameEngine* engine) const;
+	int Width() const;
+	int Height() const;
+	float Speed() const;
+	void DrawSelf(ConsoleGameEngine* engine) const;
 
+	void SetSpeed(float speed);
+	
 private:
-	Sprite* spr;
+	Sprite* m_spr;
+	float m_speed; // pixel per seconds
+	Direction m_d;
 };

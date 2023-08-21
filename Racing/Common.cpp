@@ -5,7 +5,7 @@ Point::Point() {
 	y = 0;
 }
 
-Point::Point(int x, int y) {
+Point::Point(int m_x, int y) {
 	this->x = x;
 	this->y = y;
 }
@@ -118,16 +118,27 @@ void Rect::ClipToTight(const Rect& boundary) {
 		this->x = boundary.Left();
 
 	if (this->Right() > boundary.Right())
-		this->x = boundary.Right() - width + 1;
+		this->x = (boundary.Right() - this->width + 2);
 
 	if (this->y < boundary.Top())
 		this->y = boundary.Top();
 
 	if (this->Bottom() > boundary.Bottom())
-		this->y = boundary.Bottom()  - height + 1;
+		this->y = (boundary.Bottom() - this->height + 2);
 }
 
 void Rect::ClipToTight(const Rect& boundary, int offset) {
+	if (this->x < boundary.Left() + offset)
+		this->x = boundary.Left() + offset;
+
+	if (this->Right() > boundary.Right() - offset)
+		this->x = (boundary.Right() - this->width + 2 - offset);
+
+	if (this->y < boundary.Top()+ offset)
+		this->y = boundary.Top()+ offset;
+
+	if (this->Bottom() > boundary.Bottom() - offset)
+		this->y = (boundary.Bottom() - this->height + 1 - offset);
 }
 
 void Rect::SetPosition(int x, int y) {
@@ -135,7 +146,7 @@ void Rect::SetPosition(int x, int y) {
 	this->y = y;
 }
 
-void Rect::drawSelf(ConsoleGameEngine* engine) const {
+void Rect::DrawSelf(ConsoleGameEngine* engine) const {
 	int x = this->x;
 	int y = this->y;
 
@@ -150,4 +161,9 @@ void Rect::drawSelf(ConsoleGameEngine* engine) const {
 
 		continue;
 	}
+}
+
+void Rect::RandomizePositionX(const Rect& boundary){
+	this->x = rand() % boundary.Width();
+	ClipToTight(boundary, 1);
 }

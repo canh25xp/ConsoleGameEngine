@@ -53,36 +53,41 @@ Last Updated:
 #include <string>
 using namespace std;
 
-#include "olcConsoleGameEngine.h"
+#include "ConsoleGameEngine.h"
 
-
-
-
-
-class OneLoneCoder_SpriteEditor : public olcConsoleGameEngine {
+class OneLoneCoder_SpriteEditor : public ConsoleGameEngine {
 public:
 	OneLoneCoder_SpriteEditor() {
 		m_sAppName = L"Sprite Editor";
+		nPosX = 0;
+		nPosY = 0;
+		nOffsetX = 0;
+		nOffsetY = 0;
+		nZoom = 4;
+		nCurrentGlyph = PIXEL_SOLID;
+		nCurrentColourFG = FG_RED;
+		nCurrentColourBG = FG_BLACK;
+		sprite = nullptr;
 	}
 
 private:
-	int nPosX = 0;
-	int nPosY = 0;
-	int nOffsetX = 0;
-	int nOffsetY = 0;
-	int nZoom = 4;
-	int nCurrentGlyph = PIXEL_SOLID;
-	int nCurrentColourFG = FG_RED;
-	int nCurrentColourBG = FG_BLACK;
+	int nPosX;
+	int nPosY;
+	int nOffsetX;
+	int nOffsetY;
+	int nZoom;
+	int nCurrentGlyph;
+	int nCurrentColourFG;
+	int nCurrentColourBG;
 
-	olcSprite* sprite = nullptr;
+	Sprite* sprite;
 	wstring sCurrentSpriteFile;
 
 protected:
 	// Called by olcConsoleGameEngine
 	virtual bool OnUserCreate() {
-		sprite = new olcSprite(12, 16);
-		sCurrentSpriteFile = L"title.spr";
+		sprite = new Sprite(12, 16);
+		sCurrentSpriteFile = L"car1.spr";
 
 		return true;
 	}

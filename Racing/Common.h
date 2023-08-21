@@ -53,7 +53,9 @@ public:
 	void ClipTo(const Rect& boundary, int offset);
 	void ClipToTight(const Rect& boundary);
 	void ClipToTight(const Rect& boundary, int offset);
+	
+	void DrawSelf(ConsoleGameEngine* engine) const;
+	
 	void SetPosition(int x, int y);
-	void drawSelf(ConsoleGameEngine* engine) const;
-
+	void RandomizePositionX(const Rect& boundary);
 };

@@ -63,20 +63,20 @@ void genEnemy(int ind) {
 // Vẽ xe địch lên màn hình
 void drawEnemy(int ind) {
     if (enemyFlag[ind] == true) {
-        gotoxy(enemyX[ind], enemyY[ind]);   cout << "****";
-        gotoxy(enemyX[ind], enemyY[ind] + 1); cout << " ** ";
-        gotoxy(enemyX[ind], enemyY[ind] + 2); cout << "****";
-        gotoxy(enemyX[ind], enemyY[ind] + 3); cout << " ** ";
+        gotoxy(enemyX[ind], enemyY[ind]);		cout << "****";
+        gotoxy(enemyX[ind], enemyY[ind] + 1);	cout << " ** ";
+        gotoxy(enemyX[ind], enemyY[ind] + 2);	cout << "****";
+        gotoxy(enemyX[ind], enemyY[ind] + 3);	cout << " ** ";
     }
 }
 
 // Xóa xe địch khỏi màn hình
 void eraseEnemy(int ind) {
     if (enemyFlag[ind] == true) {
-        gotoxy(enemyX[ind], enemyY[ind]); cout << "    ";
-        gotoxy(enemyX[ind], enemyY[ind] + 1); cout << "    ";
-        gotoxy(enemyX[ind], enemyY[ind] + 2); cout << "    ";
-        gotoxy(enemyX[ind], enemyY[ind] + 3); cout << "    ";
+        gotoxy(enemyX[ind], enemyY[ind]);		cout << "    ";
+        gotoxy(enemyX[ind], enemyY[ind] + 1);	cout << "    ";
+        gotoxy(enemyX[ind], enemyY[ind] + 2);	cout << "    ";
+        gotoxy(enemyX[ind], enemyY[ind] + 3);	cout << "    ";
     }
 }
 
