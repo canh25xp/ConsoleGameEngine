@@ -118,10 +118,15 @@ ConsoleGameEngine::ConsoleGameEngine() {
 
 	std::memset(m_keyNewState, 0, 256 * sizeof(short));
 	std::memset(m_keyOldState, 0, 256 * sizeof(short));
+	std::memset(m_mouseNewState, 0, 5 * sizeof(short));
+	std::memset(m_mouseOldState, 0, 5 * sizeof(short));
 	std::memset(m_keys, 0, 256 * sizeof(sKeyState));
+	std::memset(m_mouse, 0, 5 * sizeof(sKeyState));
+
 	m_mousePosX = 0;
 	m_mousePosY = 0;
 
+	m_bConsoleInFocus = true;
 	m_bEnableSound = false;
 
 	m_sAppName = L"Default";
@@ -152,7 +157,11 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 
 	// Change console visual size to a minimum so ScreenBuffer can shrink
 	// below the actual visual size
-	m_rectWindow = {0, 0, 1, 1};
+	m_rectWindow.Left = 0;
+	m_rectWindow.Top = 0;
+	m_rectWindow.Right = 1;
+	m_rectWindow.Bottom = 1;
+
 	SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow);
 
 	// Set the size of the screen buffer
@@ -198,7 +207,11 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 		return Error(L"Screen Width / Font Width Too Big");
 
 	// Set Physical Console Window Size
-	m_rectWindow = {0, 0, (short) m_nScreenWidth - 1, (short) m_nScreenHeight - 1};
+	m_rectWindow.Left = 0;
+	m_rectWindow.Top = 0;
+	m_rectWindow.Right = (short) m_nScreenWidth - 1;
+	m_rectWindow.Bottom = (short) m_nScreenHeight - 1;
+
 	if (!SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow))
 		return Error(L"SetConsoleWindowInfo");
 
@@ -677,7 +690,13 @@ void ConsoleGameEngine::GameThread() {
 			wchar_t s[256];
 			swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 			SetConsoleTitle(s);
-			WriteConsoleOutput(m_hConsole, m_bufScreen, {(short) m_nScreenWidth, (short) m_nScreenHeight}, {0,0}, &m_rectWindow);
+			COORD bufferCoord;
+			COORD bufferSize;
+			bufferSize.X = (short) m_nScreenWidth;
+			bufferSize.Y = (short) m_nScreenHeight;
+			bufferCoord.X = 0;
+			bufferCoord.Y = 0;
+			WriteConsoleOutput(m_hConsole, m_bufScreen, bufferSize, bufferCoord, &m_rectWindow);
 		}
 
 		if (m_bEnableSound) {
@@ -704,7 +723,10 @@ bool ConsoleGameEngine::OnUserDestroy() {
 // Audio Engine =====================================================================
 
 ConsoleGameEngine::AudioSample::AudioSample() {
-
+	fSample = nullptr;
+	nSamples = 0;
+	nChannels = 0;
+	bSampleValid = false;
 }
 
 ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile) {
@@ -899,9 +921,9 @@ void ConsoleGameEngine::AudioThread() {
 
 		auto clip = [] (float fSample, float fMax) {
 			if (fSample >= 0.0)
-				return fmin(fSample, fMax);
+				return min(fSample, fMax);
 			else
-				return fmax(fSample, -fMax);
+				return max(fSample, -fMax);
 			};
 
 		for (unsigned int n = 0; n < m_nBlockSamples; n += m_nChannels) {
