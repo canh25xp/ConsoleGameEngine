@@ -153,8 +153,3 @@ void Game::DrawBorder() {
 void Game::InitPlayer() {
 	pPlayer->SetPosition(60, pBorder->Bottom() - 2 * pPlayer->Height());
 }
-
-// Define our static variables
-std::atomic<bool> ConsoleGameEngine::m_bAtomActive(false);
-std::condition_variable ConsoleGameEngine::m_cvGameFinished;
-std::mutex ConsoleGameEngine::m_muxGame;
