@@ -20,25 +20,9 @@ Car::~Car() {
 	delete m_spr;
 }
 
-int Car::Width() const {
-	if(this->m_spr != nullptr)
-		return this->m_spr->nWidth;
-	return this->width;
-}
-
-int Car::Height() const {
-	if(this->m_spr != nullptr)
-		return this->m_spr->nHeight;
-	return this->height;
-}
-
 void Car::DrawSelf(ConsoleGameEngine* engine) const {
 	if (this->m_spr != nullptr)
 		engine->DrawSprite(this->x, this->y, this->m_spr);
 	else
 		engine->Fill(this->x, this->y, this->Right(), this->Bottom(), PIXEL_SOLID, FG_BLUE);
-}
-
-void Car::LoadSprite(Sprite* spr){
-	m_spr = spr;
 }

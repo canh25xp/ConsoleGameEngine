@@ -1,30 +1,4 @@
-#include "Common.h"
-
-Point::Point() {
-	x = 0;
-	y = 0;
-}
-
-Point::Point(int m_x, int y) {
-	this->x = x;
-	this->y = y;
-}
-
-void Point::MoveUp(int distance) {
-	this->y -= distance;
-}
-
-void Point::MoveDown(int distance) {
-	this->y += distance;
-}
-
-void Point::MoveRight(int distance) {
-	this->x += distance;
-}
-
-void Point::MoveLeft(int distance) {
-	this->x -= distance;
-}
+#include "Rect.h"
 
 Rect::Rect() {
 	x = 0;
@@ -69,11 +43,11 @@ int Rect::Height() const {
 }
 
 
-Point Rect::TopLeft() const{
+Point Rect::TopLeft() const {
 	return Point(this->x, this->y);
 }
 
-Point Rect::TopRight() const{
+Point Rect::TopRight() const {
 	return Point(this->x + width - 1, this->y);
 }
 
@@ -134,25 +108,20 @@ void Rect::ClipToTight(const Rect& boundary, int offset) {
 	if (this->Right() > boundary.Right() - offset)
 		this->x = (boundary.Right() - this->width + 2 - offset);
 
-	if (this->y < boundary.Top()+ offset)
-		this->y = boundary.Top()+ offset;
+	if (this->y < boundary.Top() + offset)
+		this->y = boundary.Top() + offset;
 
 	if (this->Bottom() > boundary.Bottom() - offset)
 		this->y = (boundary.Bottom() - this->height + 1 - offset);
 }
 
-void Rect::SetPosition(int x, int y) {
-	this->x = x;
-	this->y = y;
-}
-
-void Rect::DrawSelf(ConsoleGameEngine* engine) const {
+void Rect::DrawSelf(ConsoleGameEngine* engine, short c, short col) const {
 	int x = this->x;
 	int y = this->y;
 
 	for (int d = 0; d < 4; d++) {
 		while (x >= this->Left() && x <= this->Right() && y >= this->Top() && y <= this->Bottom()) {
-			engine->Draw(x, y, PIXEL_BLANK, BORDER);
+			engine->Draw(x, y, c, col);
 			x += dx[d];
 			y += dy[d];
 		}
@@ -163,25 +132,21 @@ void Rect::DrawSelf(ConsoleGameEngine* engine) const {
 	}
 }
 
-void Rect::RandomizeX(const Rect& boundary){
-	this->x = rand() % (boundary.Width() - this->width + 1);
-}
+bool Rect::CollisionWith(const Rect& other) const {
+	if ((x + width - 1) <= other.x)
+		return false;
+	if (x >= (other.x + other.width - 1))
+		return false;
+	if (y >= (other.y + other.height))
+		return false;
+	if ((y + height) <= other.y)
+		return false;
 
-bool Rect::CollisionWith(const Rect& other) const{
-	if((x + width - 1) <= other.x)
-		return false;
-	if(x >= (other.x + other.width - 1))
-		return false;
-	if(y >= (other.y + other.height))
-		return false;
-	if((y + height) <= other.y)
-		return false;
-	
 	return true;
 }
 
-bool Rect::OutOfBound(const Rect& boundary){
-	if(this->y > boundary.Bottom())
+bool Rect::OutOfBound(const Rect& boundary) {
+	if (this->y > boundary.Bottom())
 		return true;
 	return false;
 }

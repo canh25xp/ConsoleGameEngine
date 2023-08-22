@@ -1,9 +1,14 @@
 #pragma once
 #include "ConsoleGameEngine.h"
 #include "Car.h"
-#include "Common.h"
 
-#define OBSTACLES_COUNT 3
+const int MAX_NPC = 4;
+
+const COLOUR BACK_GROUND = BG_BLACK;
+const COLOUR BORDER = BG_DARK_RED;
+
+const int BORDER_WIDTH = 120;
+const int BORDER_HEIGHT = 160;
 
 class Game : public ConsoleGameEngine {
 public:
@@ -21,17 +26,12 @@ public:
 	void WaitKey(int vKey);
 	void FillGrid();
 	void DrawBorder();
-	void MarkDanger(const Car& obstacle);
 	void InitPlayer();
-	void InitObstacles();
 
 private:
-	Rect *m_border;
-	Car *m_player;
-	Car *m_obstacles[OBSTACLES_COUNT];
-	Sprite *m_shareSpr;
-	
-	int m_playerY;
+	Rect* m_border;
+	Car* m_player;
+	Car* m_npc[MAX_NPC];
 
 private:
 	float m_count;

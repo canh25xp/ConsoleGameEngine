@@ -3,36 +3,32 @@
 using namespace std::chrono;
 
 Game::Game() {
-	m_sAppName	= L"Racing";
-	m_border	= nullptr;
-	m_player		= nullptr;
-	for (int i = 0; i < OBSTACLES_COUNT; i++)
-		m_obstacles[i] = nullptr;
+	m_sAppName = L"Racing";
+	m_border = nullptr;
+	m_player = nullptr;
+
+	for (int i = 0; i < MAX_NPC; i++)
+		m_npc[i] = nullptr;
+
+	m_count = 0;
 
 	//HideFPS();
 }
 
 bool Game::OnUserCreate() {
-	m_count = 0;
+	m_border = new Rect(0, 0, BORDER_WIDTH, BORDER_HEIGHT);
 
-	m_border = new Rect(0, 0, 120, 160);
+	//Load player sprite
 	m_player = new Car(L"assets/car1.spr");
-	m_shareSpr = new Sprite(L"assets/car2.spr");
 
-	for (int i = 0; i < OBSTACLES_COUNT; i++){
-		m_obstacles[i] = new Car();
-	}
+	//Load NPC sprite
+	for (int i = 0; i < MAX_NPC; i++)
+		m_npc[i] = new Car(L"assets/car2.spr");
 
-	for (int i = 0; i < OBSTACLES_COUNT; i++){
-		m_obstacles[i]->LoadSprite(m_shareSpr);
-	}
-
-	for (int i = 0; i < OBSTACLES_COUNT; i++){
-		m_obstacles[i]->RandomizeX(*m_border); 
-	}
-
-	for (int i = 0; i < OBSTACLES_COUNT; i++){
-
+	//Randomize NPC's X coordinate, restricted by the border
+	for (int i = 0; i < MAX_NPC; i++) {
+		m_npc[i]->RandomizeX(m_border->Left(), m_border->Right() - m_npc[i]->Width());
+		m_npc[i]->SetY(0 - ((BORDER_HEIGHT / MAX_NPC) * i));
 	}
 
 	InitPlayer();
@@ -51,48 +47,49 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 	//	m_player->MoveDown(1);
 	//}
 
-	if(m_keys[VK_RIGHT].bHeld){
+	if (m_keys[VK_RIGHT].bHeld) {
 		m_player->MoveRight(1);
 	}
 
-	if(m_keys[VK_LEFT].bHeld){
+	if (m_keys[VK_LEFT].bHeld) {
 		m_player->MoveLeft(1);
 	}
 
-	if(m_count > 0.001){
-		for (int i = 0; i < OBSTACLES_COUNT; i++){
-			m_obstacles[i]->MoveDown(1);
-
+	if (m_count > 0.005) {
+		for (int i = 0; i < MAX_NPC; i++) {
+			m_npc[i]->MoveDown(1);
 		}
 		m_count = 0;
 	}
 
 	m_player->ClipToTight(*m_border, 1);
 
-	//for (int i = 0; i < OBSTACLES_COUNT; i++){
-	//	if(m_player->CollisionWith(*m_obstacles[i])){
-	//		m_player->SetPositionBottomLeft(60, m_border->Bottom()-10);
-	//		WaitKey(VK_SPACE);
-	//		m_obstacles[i]->SetPositionBottomLeft(0,m_border->Top() - 50);
-	//		m_obstacles[i]->RandomizePositionX(*m_border);
-	//	}
-	//}
-
-	m_player->DrawSelf(this);
-
-	for (int i = 0; i < OBSTACLES_COUNT; i++){
-		m_obstacles[i]->DrawSelf(this);
-	}
-
-
-	for (int i = 0; i < OBSTACLES_COUNT; i++){
-		if(m_obstacles[i]->OutOfBound(*m_border)){
-			m_obstacles[i]->SetPosition(0,m_border->Top() - i*50);
-			m_obstacles[i]->RandomizeX(*m_border); 
+	for (int i = 0; i < MAX_NPC; i++) {
+		if (m_player->CollisionWith(*m_npc[i])) {
+			WaitKey(VK_SPACE);
+			InitPlayer();
+			for (int i = 0; i < MAX_NPC; i++) {
+				m_npc[i]->RandomizeX(m_border->Left(), m_border->Right() - m_npc[i]->Width());
+				m_npc[i]->SetY(0 - ((BORDER_HEIGHT / MAX_NPC) * i));
+			}
 		}
 	}
 
-	m_border->DrawSelf(this);
+	m_player->DrawSelf(this);
+
+	for (int i = 0; i < MAX_NPC; i++) {
+		m_npc[i]->DrawSelf(this);
+	}
+
+
+	for (int i = 0; i < MAX_NPC; i++) {
+		if (m_npc[i]->OutOfBound(*m_border)) {
+			m_npc[i]->RandomizeX(m_border->Left(), m_border->Right() - m_npc[i]->Width());
+			m_npc[i]->SetY(-50);
+		}
+	}
+
+	m_border->DrawSelf(this, PIXEL_BLANK, BG_DARK_RED);
 	//DrawBorder();
 
 	return true;
@@ -101,7 +98,6 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 bool Game::OnUserDestroy() {
 	delete m_border;
 	delete m_player;
-	delete m_shareSpr;
 	return true;
 }
 
@@ -139,16 +135,16 @@ void Game::FillGrid() {
 	}
 }
 
-void Game::DrawBorder(){
-	for (int i = 0; i < ScreenWidth(); i++){
-		for (int j = 0; j < ScreenHeight(); j++){
-			if(j <= m_border->Top() || j >= m_border->Bottom() || i <= m_border->Left() || i>= m_border->Right())
+void Game::DrawBorder() {
+	for (int i = 0; i < ScreenWidth(); i++) {
+		for (int j = 0; j < ScreenHeight(); j++) {
+			if (j <= m_border->Top() || j >= m_border->Bottom() || i <= m_border->Left() || i >= m_border->Right())
 				Draw(i, j, PIXEL_BLANK, BORDER);
 		}
 	}
 }
 
-void Game::InitPlayer(){
-	m_player->SetPosition(60, m_border->Bottom() - 2*m_player->Height());
+void Game::InitPlayer() {
+	m_player->SetPosition(60, m_border->Bottom() - 2 * m_player->Height());
 }
 
