@@ -56,9 +56,6 @@
     <None Include="assets\car2.spr" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="racing.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="assets\Car1.png">
       <Filter>Resource Files</Filter>
     </Image>

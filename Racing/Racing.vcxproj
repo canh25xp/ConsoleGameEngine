@@ -162,9 +162,6 @@
     <ClInclude Include="Map.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="racing.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="assets\car1.spr" />
     <None Include="assets\car2.spr" />
   </ItemGroup>
