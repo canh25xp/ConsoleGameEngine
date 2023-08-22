@@ -1,13 +1,8 @@
-#include <iostream>
-#include <string>
-using namespace std;
-
 #include "ConsoleGameEngine.h"
 
-
-class OneLoneCoder_Matrix : public ConsoleGameEngine {
+class Test : public ConsoleGameEngine {
 public:
-	OneLoneCoder_Matrix() {
+	Test() {
 		m_sAppName = L"Matrix";
 		EnableSound();
 	}
@@ -16,23 +11,20 @@ private:
 	int id;
 
 protected:
-	// Called by olcConsoleGameEngine
-	virtual bool OnUserCreate() {
-		id = LoadAudioSample(L"vine_boom.wav");
+	bool OnUserCreate() {
+		id = LoadAudioSample(L"assets/vine_boom.wav");
 		return true;
 	}
 
-	// Called by olcConsoleGameEngine
-	virtual bool OnUserUpdate(float fElapsedTime) {
+	bool OnUserUpdate(float fElapsedTime) {
 		if (m_keys[VK_SPACE].bPressed)
 			PlaySample(id);
 		return true;
 	}
 };
 
-
 int main() {
-	OneLoneCoder_Matrix game;
+	Test game;
 	game.ConstructConsole(100, 80, 8, 8);
 	game.Start();
 	return 0;
