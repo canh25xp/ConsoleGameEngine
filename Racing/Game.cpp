@@ -14,9 +14,7 @@ Game::Game() {
 	timeSinceStart = 0;
 	hitSoundEffect = 0;
 
-	//EnableSound();
-
-	//HideFPS();
+	EnableSound();
 }
 
 bool Game::OnUserCreate() {
@@ -35,16 +33,13 @@ bool Game::OnUserCreate() {
 		m_npc[i]->SetY(0 - ((BORDER_HEIGHT / MAX_NPC) * i));
 	}
 
-	//hitSoundEffect = LoadAudioSample(L"assets/vine_boom.wav");
+	hitSoundEffect = LoadAudioSample(L"assets/vine_boom.wav");
 
 	InitPlayer();
 	return true;
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
-	//if(m_keys[VK_SPACE].bPressed)
-	//	PlaySample(hitSoundEffect);
-
 	ClearScreen();
 	timeSinceStart += fElapsedTime;
 	interval += fElapsedTime;
@@ -76,6 +71,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
 	for (int i = 0; i < MAX_NPC; i++) {
 		if (pPlayer->CollisionWith(*m_npc[i])) {
+			PlaySample(hitSoundEffect);
 			WaitKey(VK_SPACE);
 			InitPlayer();
 			for (int i = 0; i < MAX_NPC; i++) {
@@ -158,3 +154,7 @@ void Game::InitPlayer() {
 	pPlayer->SetPosition(60, pBorder->Bottom() - 2 * pPlayer->Height());
 }
 
+// Define our static variables
+std::atomic<bool> ConsoleGameEngine::m_bAtomActive(false);
+std::condition_variable ConsoleGameEngine::m_cvGameFinished;
+std::mutex ConsoleGameEngine::m_muxGame;
