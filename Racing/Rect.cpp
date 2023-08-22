@@ -1,10 +1,10 @@
 #include "Rect.h"
 
 Rect::Rect() {
-	x = 0;
-	y = 0;
-	width = 0;
-	height = 0;
+	this->x = 0;
+	this->y = 0;
+	this->width = 0;
+	this->height = 0;
 }
 
 Rect::Rect(int x, int y, int width, int height) {
@@ -23,7 +23,7 @@ int Rect::Top() const {
 }
 
 int Rect::Bottom() const {
-	return (this->y + height - 1);
+	return (this->y + this->height - 1);
 }
 
 int Rect::Left() const {
@@ -31,7 +31,7 @@ int Rect::Left() const {
 }
 
 int Rect::Right() const {
-	return (this->x + width - 1);
+	return (this->x + this->width - 1);
 }
 
 int Rect::Width() const {
@@ -48,15 +48,15 @@ Point Rect::TopLeft() const {
 }
 
 Point Rect::TopRight() const {
-	return Point(this->x + width - 1, this->y);
+	return Point(this->x + this->width - 1, this->y);
 }
 
 Point Rect::BottomLeft() const {
-	return Point(this->x, this->y + height - 1);
+	return Point(this->x, this->y + this->height - 1);
 }
 
 Point Rect::BottomRight() const {
-	return Point(this->x + width - 1, this->y + height - 1);
+	return Point(this->x + this->width - 1, this->y + this->height - 1);
 }
 
 void Rect::ClipTo(const Rect& boundary) {

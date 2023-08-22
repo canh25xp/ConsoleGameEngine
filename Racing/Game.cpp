@@ -4,22 +4,26 @@ using namespace std::chrono;
 
 Game::Game() {
 	m_sAppName = L"Racing";
-	m_border = nullptr;
-	m_player = nullptr;
+	pBorder = nullptr;
+	pPlayer = nullptr;
 
 	for (int i = 0; i < MAX_NPC; i++)
 		m_npc[i] = nullptr;
 
-	m_count = 0;
+	interval = 0;
+	timeSinceStart = 0;
+	hitSoundEffect = 0;
+
+	//EnableSound();
 
 	//HideFPS();
 }
 
 bool Game::OnUserCreate() {
-	m_border = new Rect(0, 0, BORDER_WIDTH, BORDER_HEIGHT);
+	pBorder = new Rect(0, 0, BORDER_WIDTH, BORDER_HEIGHT);
 
 	//Load player sprite
-	m_player = new Car(L"assets/car1.spr");
+	pPlayer = new Car(L"assets/car1.spr");
 
 	//Load NPC sprite
 	for (int i = 0; i < MAX_NPC; i++)
@@ -27,55 +31,61 @@ bool Game::OnUserCreate() {
 
 	//Randomize NPC's X coordinate, restricted by the border
 	for (int i = 0; i < MAX_NPC; i++) {
-		m_npc[i]->RandomizeX(m_border->Left(), m_border->Right() - m_npc[i]->Width());
+		m_npc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - m_npc[i]->Width());
 		m_npc[i]->SetY(0 - ((BORDER_HEIGHT / MAX_NPC) * i));
 	}
+
+	//hitSoundEffect = LoadAudioSample(L"assets/vine_boom.wav");
 
 	InitPlayer();
 	return true;
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
-	ClearScreen();
+	//if(m_keys[VK_SPACE].bPressed)
+	//	PlaySample(hitSoundEffect);
 
-	m_count += fElapsedTime;
+	ClearScreen();
+	timeSinceStart += fElapsedTime;
+	interval += fElapsedTime;
+
 	//if (m_keys[VK_UP].bHeld) {
-	//	m_player->MoveUp(1);
+	//	pPlayer->MoveUp(1);
 	//}
 
 	//if (m_keys[VK_DOWN].bHeld) {
-	//	m_player->MoveDown(1);
+	//	pPlayer->MoveDown(1);
 	//}
 
 	if (m_keys[VK_RIGHT].bHeld) {
-		m_player->MoveRight(1);
+		pPlayer->MoveRight(1);
 	}
 
 	if (m_keys[VK_LEFT].bHeld) {
-		m_player->MoveLeft(1);
+		pPlayer->MoveLeft(1);
 	}
 
-	if (m_count > 0.005) {
+	if (interval > 0.005) {
 		for (int i = 0; i < MAX_NPC; i++) {
 			m_npc[i]->MoveDown(1);
 		}
-		m_count = 0;
+		interval = 0;
 	}
 
-	m_player->ClipToTight(*m_border, 1);
+	pPlayer->ClipToTight(*pBorder, 1);
 
 	for (int i = 0; i < MAX_NPC; i++) {
-		if (m_player->CollisionWith(*m_npc[i])) {
+		if (pPlayer->CollisionWith(*m_npc[i])) {
 			WaitKey(VK_SPACE);
 			InitPlayer();
 			for (int i = 0; i < MAX_NPC; i++) {
-				m_npc[i]->RandomizeX(m_border->Left(), m_border->Right() - m_npc[i]->Width());
+				m_npc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - m_npc[i]->Width());
 				m_npc[i]->SetY(0 - ((BORDER_HEIGHT / MAX_NPC) * i));
 			}
 		}
 	}
 
-	m_player->DrawSelf(this);
+	pPlayer->DrawSelf(this);
 
 	for (int i = 0; i < MAX_NPC; i++) {
 		m_npc[i]->DrawSelf(this);
@@ -83,21 +93,21 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
 
 	for (int i = 0; i < MAX_NPC; i++) {
-		if (m_npc[i]->OutOfBound(*m_border)) {
-			m_npc[i]->RandomizeX(m_border->Left(), m_border->Right() - m_npc[i]->Width());
+		if (m_npc[i]->OutOfBound(*pBorder)) {
+			m_npc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - m_npc[i]->Width());
 			m_npc[i]->SetY(-50);
 		}
 	}
 
-	m_border->DrawSelf(this, PIXEL_BLANK, BG_DARK_RED);
+	pBorder->DrawSelf(this, PIXEL_BLANK, BG_DARK_RED);
 	//DrawBorder();
 
 	return true;
 }
 
 bool Game::OnUserDestroy() {
-	delete m_border;
-	delete m_player;
+	delete pBorder;
+	delete pPlayer;
 	return true;
 }
 
@@ -138,13 +148,13 @@ void Game::FillGrid() {
 void Game::DrawBorder() {
 	for (int i = 0; i < ScreenWidth(); i++) {
 		for (int j = 0; j < ScreenHeight(); j++) {
-			if (j <= m_border->Top() || j >= m_border->Bottom() || i <= m_border->Left() || i >= m_border->Right())
+			if (j <= pBorder->Top() || j >= pBorder->Bottom() || i <= pBorder->Left() || i >= pBorder->Right())
 				Draw(i, j, PIXEL_BLANK, BORDER);
 		}
 	}
 }
 
 void Game::InitPlayer() {
-	m_player->SetPosition(60, m_border->Bottom() - 2 * m_player->Height());
+	pPlayer->SetPosition(60, pBorder->Bottom() - 2 * pPlayer->Height());
 }
 

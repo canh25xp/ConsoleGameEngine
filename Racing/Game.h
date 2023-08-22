@@ -29,10 +29,12 @@ public:
 	void InitPlayer();
 
 private:
-	Rect* m_border;
-	Car* m_player;
+	Rect* pBorder;
+	Car* pPlayer;
 	Car* m_npc[MAX_NPC];
 
 private:
-	float m_count;
+	float interval;
+	float timeSinceStart;
+	int hitSoundEffect;
 };

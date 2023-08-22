@@ -12,5 +12,5 @@ public:
 	void DrawSelf(ConsoleGameEngine* engine) const;
 
 protected:
-	Sprite* m_spr;
+	Sprite* pSprite;
 };

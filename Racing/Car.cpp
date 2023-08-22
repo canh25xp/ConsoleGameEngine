@@ -1,7 +1,7 @@
 #include "Car.h"
 
 Car::Car() {
-	this->m_spr = nullptr;
+	this->pSprite = nullptr;
 	this->x = 0;
 	this->y = 0;
 	this->width = 12;
@@ -9,20 +9,20 @@ Car::Car() {
 }
 
 Car::Car(std::wstring sFile) {
-	this->m_spr = new Sprite(sFile);
+	this->pSprite = new Sprite(sFile);
 	this->x = 0;
 	this->y = 0;
-	this->width = m_spr->nWidth;
-	this->height = m_spr->nHeight;
+	this->width = pSprite->nWidth;
+	this->height = pSprite->nHeight;
 }
 
 Car::~Car() {
-	delete m_spr;
+	delete pSprite;
 }
 
 void Car::DrawSelf(ConsoleGameEngine* engine) const {
-	if (this->m_spr != nullptr)
-		engine->DrawSprite(this->x, this->y, this->m_spr);
+	if (this->pSprite != nullptr)
+		engine->DrawSprite(this->x, this->y, this->pSprite);
 	else
 		engine->Fill(this->x, this->y, this->Right(), this->Bottom(), PIXEL_SOLID, FG_BLUE);
 }

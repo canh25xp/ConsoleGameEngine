@@ -1,8 +1,7 @@
 #pragma once
 #include "ConsoleGameEngine.h"
 
-class Map
-{
+class Map {
 public:
 	Map();
 	~Map();
