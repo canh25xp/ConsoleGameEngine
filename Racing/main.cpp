@@ -1,9 +1,9 @@
 #include "Game.h"
 
 int main() {
-	Game game;
-	game.ConstructConsole(120, 160, 4, 4);
-	game.Start();
+	Game racing;
+	racing.ConstructConsole(160, 160, 4, 4);
+	racing.Start();
 
 	return 0;
 }

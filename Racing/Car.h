@@ -1,18 +1,16 @@
 #pragma once
 #include "ConsoleGameEngine.h"
-#include "Common.h"
+#include "Rect.h"
 
-class Car {
+class Car : public Rect {
 public:
 	Car();
+	Car(std::wstring sFile);
 	~Car();
-public:
-	void DrawSelf(ConsoleGameEngine* grf);
 
-private:
-	int width;
-	int height;
 public:
-	Point2D position;	//top_left of the car
-	Sprite* spr;
+	void DrawSelf(ConsoleGameEngine* engine) const;
+
+protected:
+	Sprite* m_spr;
 };

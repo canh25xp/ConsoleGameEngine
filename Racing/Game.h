@@ -1,23 +1,38 @@
 #pragma once
-#include <iostream>
 #include "ConsoleGameEngine.h"
 #include "Car.h"
-#include "Common.h"
+
+const int MAX_NPC = 4;
+
+const COLOUR BACK_GROUND = BG_BLACK;
+const COLOUR BORDER = BG_DARK_RED;
+
+const int BORDER_WIDTH = 120;
+const int BORDER_HEIGHT = 160;
 
 class Game : public ConsoleGameEngine {
 public:
 	Game();
+
 protected:
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
-	void DrawBorder();
+	bool OnUserDestroy() override;
+
+public:
 	void ClearScreen();
 	void UpdateScreen();
-	void RainbowFill();
+	void FillRainbow();
 	void WaitKey(int vKey);
+	void FillGrid();
+	void DrawBorder();
+	void InitPlayer();
 
 private:
-	unsigned int score;
-	Car m_car;
-	bool exit;
+	Rect* m_border;
+	Car* m_player;
+	Car* m_npc[MAX_NPC];
+
+private:
+	float m_count;
 };

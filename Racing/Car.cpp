@@ -1,59 +1,28 @@
 #include "Car.h"
 
-
-int car[16][12] = {
-	1,1,0,0,3,3,3,3,0,0,1,1,
-	1,1,2,2,3,3,3,3,2,2,1,1,
-	1,1,0,0,3,3,3,3,0,0,1,1,
-	0,0,0,0,3,3,3,3,0,0,0,0,
-	0,0,3,3,3,3,3,3,3,3,0,0,
-	0,0,3,3,3,3,3,3,3,3,0,0,
-	0,0,3,3,4,4,4,4,3,3,0,0,
-	0,0,3,3,4,4,4,4,3,3,0,0,
-	0,0,3,3,4,4,4,4,3,3,0,0,
-	0,0,3,3,4,4,4,4,3,3,0,0,
-	1,1,3,3,4,4,4,4,3,3,1,1,
-	1,1,3,3,3,3,3,3,3,3,1,1,
-	1,1,3,3,3,3,3,3,3,3,1,1,
-	0,0,0,0,3,3,3,3,0,0,0,0,
-	0,0,0,0,3,3,3,3,0,0,0,0,
-	3,3,3,3,3,3,3,3,3,3,3,3
-};
-
-
-
 Car::Car() {
-	spr = nullptr;
-	position = Point2D(10, 10);
-	width = 12;
-	height = 16;
+	this->m_spr = nullptr;
+	this->x = 0;
+	this->y = 0;
+	this->width = 12;
+	this->height = 16;
+}
+
+Car::Car(std::wstring sFile) {
+	this->m_spr = new Sprite(sFile);
+	this->x = 0;
+	this->y = 0;
+	this->width = m_spr->nWidth;
+	this->height = m_spr->nHeight;
 }
 
 Car::~Car() {
-
+	delete m_spr;
 }
 
-void Car::DrawSelf(ConsoleGameEngine* grf) {
-	for (int i = 0; i < height; i++) {
-		for (int j = 0; j < width; j++) {
-			switch (car[i][j]) {
-				case 0:
-					break;
-				case 1:
-					grf->Draw(position.x + j, position.y + i, ' ', CAR_TIRE);
-					break;
-				case 2:
-					grf->Draw(position.x + j, position.y + i, ' ', CAR_AXIAL);
-					break;
-				case 3:
-					grf->Draw(position.x + j, position.y + i, ' ', CAR_MAIN);
-					break;
-				case 4:
-					grf->Draw(position.x + j, position.y + i, ' ', CAR_WINDOW);
-					break;
-				default:
-					break;
-			}
-		}
-	}
+void Car::DrawSelf(ConsoleGameEngine* engine) const {
+	if (this->m_spr != nullptr)
+		engine->DrawSprite(this->x, this->y, this->m_spr);
+	else
+		engine->Fill(this->x, this->y, this->Right(), this->Bottom(), PIXEL_SOLID, FG_BLUE);
 }
