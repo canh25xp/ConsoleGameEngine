@@ -1,10 +1,7 @@
 #include "ConsoleGameEngine.h"
 
 Sprite::Sprite() {
-	nWidth = 0;
-	nHeight = 0;
-	m_Glyphs = nullptr;
-	m_Colours = nullptr;
+
 }
 
 Sprite::Sprite(int w, int h) {
@@ -12,10 +9,6 @@ Sprite::Sprite(int w, int h) {
 }
 
 Sprite::Sprite(std::wstring sFile) {
-	nWidth = 0;
-	nHeight = 0;
-	m_Glyphs = nullptr;
-	m_Colours = nullptr;
 	if (!Load(sFile))
 		Create(8, 8);
 }
@@ -123,17 +116,12 @@ ConsoleGameEngine::ConsoleGameEngine() {
 	m_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	m_hConsoleIn = GetStdHandle(STD_INPUT_HANDLE);
 
-	std::memset(m_keyNewState, 0, sizeof(m_keyNewState));
-	std::memset(m_keyOldState, 0, sizeof(m_keyOldState));
-	std::memset(m_mouseNewState, 0, sizeof(m_mouseOldState));
-	std::memset(m_mouseOldState, 0, sizeof(m_mouseOldState));
+	std::memset(m_keyNewState, 0, 256 * sizeof(short));
+	std::memset(m_keyOldState, 0, 256 * sizeof(short));
 	std::memset(m_keys, 0, 256 * sizeof(sKeyState));
-	std::memset(m_mouse, 0, 5 * sizeof(sKeyState));
-
 	m_mousePosX = 0;
 	m_mousePosY = 0;
 
-	m_bConsoleInFocus = true;
 	m_bEnableSound = false;
 
 	m_sAppName = L"Default";
@@ -164,11 +152,7 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 
 	// Change console visual size to a minimum so ScreenBuffer can shrink
 	// below the actual visual size
-	m_rectWindow.Left = 0;
-	m_rectWindow.Top = 0;
-	m_rectWindow.Right = 1;
-	m_rectWindow.Bottom = 1;
-
+	m_rectWindow = {0, 0, 1, 1};
 	SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow);
 
 	// Set the size of the screen buffer
@@ -214,11 +198,7 @@ int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fo
 		return Error(L"Screen Width / Font Width Too Big");
 
 	// Set Physical Console Window Size
-	m_rectWindow.Left = 0;
-	m_rectWindow.Top = 0;
-	m_rectWindow.Right = (short) m_nScreenWidth - 1;
-	m_rectWindow.Bottom = (short) m_nScreenHeight - 1;
-
+	m_rectWindow = {0, 0, (short) m_nScreenWidth - 1, (short) m_nScreenHeight - 1};
 	if (!SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow))
 		return Error(L"SetConsoleWindowInfo");
 
@@ -695,18 +675,9 @@ void ConsoleGameEngine::GameThread() {
 
 			// Update Title & Present Screen Buffer
 			wchar_t s[256];
-			if (m_hideFPS)
-				swprintf_s(s, 256, L"%s", m_sAppName.c_str());
-			else
-				swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
+			swprintf_s(s, 256, L"OneLoneCoder.com - Console Game Engine - %s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 			SetConsoleTitle(s);
-			COORD bufferCoord;
-			COORD bufferSize;
-			bufferSize.X = (short) m_nScreenWidth;
-			bufferSize.Y = (short) m_nScreenHeight;
-			bufferCoord.X = 0;
-			bufferCoord.Y = 0;
-			WriteConsoleOutput(m_hConsole, m_bufScreen, bufferSize, bufferCoord, &m_rectWindow);
+			WriteConsoleOutput(m_hConsole, m_bufScreen, {(short) m_nScreenWidth, (short) m_nScreenHeight}, {0,0}, &m_rectWindow);
 		}
 
 		if (m_bEnableSound) {
@@ -733,10 +704,7 @@ bool ConsoleGameEngine::OnUserDestroy() {
 // Audio Engine =====================================================================
 
 ConsoleGameEngine::AudioSample::AudioSample() {
-	fSample = nullptr;
-	nSamples = 0;
-	nChannels = 0;
-	bSampleValid = false;
+
 }
 
 ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile) {
@@ -760,7 +728,7 @@ ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile) {
 	// Note the -2, because the structure has 2 bytes to indicate its own size
 	// which are not in the wav file
 
-// Just check if wave format is compatible with olcCGE
+	// Just check if wave format is compatible with olcCGE
 	if (wavHeader.wBitsPerSample != 16 || wavHeader.nSamplesPerSec != 44100) {
 		std::fclose(f);
 		return;
@@ -931,9 +899,9 @@ void ConsoleGameEngine::AudioThread() {
 
 		auto clip = [] (float fSample, float fMax) {
 			if (fSample >= 0.0)
-				return max(fSample, fMax);
+				return fmin(fSample, fMax);
 			else
-				return min(fSample, -fMax);
+				return fmax(fSample, -fMax);
 			};
 
 		for (unsigned int n = 0; n < m_nBlockSamples; n += m_nChannels) {
@@ -982,6 +950,7 @@ float ConsoleGameEngine::onUserSoundFilter(int nChannel, float fGlobalTime, floa
 // Finally, before the sound is issued to the operating system for performing, the
 // user gets one final chance to "filter" the sound, perhaps changing the volume
 // or adding funky effects
+
 float ConsoleGameEngine::GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep) {
 	// Accumulate sample for this channel
 	float fMixerSample = 0.0f;
@@ -1005,6 +974,10 @@ float ConsoleGameEngine::GetMixerOutput(int nChannel, float fGlobalTime, float f
 
 	// Return the sample via an optional user override to filter the sound
 	return onUserSoundFilter(nChannel, fGlobalTime, fMixerSample);
+}
+
+ConsoleGameEngine::sKeyState ConsoleGameEngine::GetKey(int nKeyID) {
+	return m_keys[nKeyID];
 }
 
 int ConsoleGameEngine::GetMouseX() {
