@@ -143,6 +143,8 @@ public:
 
 	void EnableSound();
 
+	void HideFPS();
+
 	int ConstructConsole(int width, int height, int fontw, int fonth);
 
 	virtual void Draw(int x, int y, short c = 0x2588, short col = COLOUR::FG_WHITE);
@@ -182,14 +184,12 @@ private:
 	void GameThread();
 
 public:
-	// User MUST OVERRIDE THESE!!
 	virtual bool OnUserCreate() = 0;
 	virtual bool OnUserUpdate(float fElapsedTime) = 0;
 
-	// Optional for clean up 
 	virtual bool OnUserDestroy();
 
-	// Audio Engine =====================================================================
+// Audio Engine =====================================================================
 protected:
 	class AudioSample {
 	public:
@@ -199,7 +199,7 @@ protected:
 
 		WAVEFORMATEX wavHeader;
 
-		float* fSample;	//nullptr
+		float* fSample;		//nullptr
 		long nSamples;		//0
 		int nChannels;		//0
 		bool bSampleValid;	//false
@@ -328,6 +328,7 @@ protected:
 	bool m_mouseNewState[5];	//0
 	bool m_bConsoleInFocus;		//true
 	bool m_bEnableSound;		//false
+	bool m_hideFPS;
 
 	// These need to be static because of the OnDestroy call the OS may make. The OS
 	// spawns a special thread just for that

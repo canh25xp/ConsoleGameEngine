@@ -6,7 +6,7 @@ enum Direction{
 	Up, Right, Down, Left
 };
 
-class Car : public Rect {
+class Car : public Rect{
 public:
 	Car();
 	Car(std::wstring sFile);
@@ -15,13 +15,9 @@ public:
 public:
 	int Width() const;
 	int Height() const;
-	float Speed() const;
 	void DrawSelf(ConsoleGameEngine* engine) const;
+	void LoadSprite(Sprite* spr);
 
-	void SetSpeed(float speed);
-	
 private:
 	Sprite* m_spr;
-	float m_speed; // pixel per seconds
-	Direction m_d;
 };

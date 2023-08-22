@@ -3,6 +3,8 @@
 #include "Car.h"
 #include "Common.h"
 
+#define OBSTACLES_COUNT 3
+
 class Game : public ConsoleGameEngine {
 public:
 	Game();
@@ -15,14 +17,22 @@ protected:
 public:
 	void ClearScreen();
 	void UpdateScreen();
-	void RainbowFill();
+	void FillRainbow();
 	void WaitKey(int vKey);
-	void DrawGrid();
+	void FillGrid();
+	void DrawBorder();
+	void MarkDanger(const Car& obstacle);
+	void InitPlayer();
+	void InitObstacles();
 
 private:
-	Rect* m_border;
-	Car* m_car;
-	Car* m_obstacles[3];
+	Rect *m_border;
+	Car *m_player;
+	Car *m_obstacles[OBSTACLES_COUNT];
+	Sprite *m_shareSpr;
+	
+	int m_playerY;
 
-	float m_duration;
+private:
+	float m_count;
 };

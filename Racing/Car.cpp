@@ -6,7 +6,6 @@ Car::Car() {
 	this->y = 0;
 	this->width = 12;
 	this->height = 16;
-	this->m_speed = 0;
 }
 
 Car::Car(std::wstring sFile) {
@@ -15,7 +14,6 @@ Car::Car(std::wstring sFile) {
 	this->y = 0;
 	this->width = m_spr->nWidth;
 	this->height = m_spr->nHeight;
-	this->m_speed = 0;
 }
 
 Car::~Car() {
@@ -41,10 +39,6 @@ void Car::DrawSelf(ConsoleGameEngine* engine) const {
 		engine->Fill(this->x, this->y, this->Right(), this->Bottom(), PIXEL_SOLID, FG_BLUE);
 }
 
-float Car::Speed() const{
-	return this->m_speed;
-}
-
-void Car::SetSpeed(float speed){
-	this->m_speed = speed;
+void Car::LoadSprite(Sprite* spr){
+	m_spr = spr;
 }

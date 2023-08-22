@@ -163,7 +163,25 @@ void Rect::DrawSelf(ConsoleGameEngine* engine) const {
 	}
 }
 
-void Rect::RandomizePositionX(const Rect& boundary){
-	this->x = rand() % boundary.Width();
-	ClipToTight(boundary, 1);
+void Rect::RandomizeX(const Rect& boundary){
+	this->x = rand() % (boundary.Width() - this->width + 1);
+}
+
+bool Rect::CollisionWith(const Rect& other) const{
+	if((x + width - 1) <= other.x)
+		return false;
+	if(x >= (other.x + other.width - 1))
+		return false;
+	if(y >= (other.y + other.height))
+		return false;
+	if((y + height) <= other.y)
+		return false;
+	
+	return true;
+}
+
+bool Rect::OutOfBound(const Rect& boundary){
+	if(this->y > boundary.Bottom())
+		return true;
+	return false;
 }

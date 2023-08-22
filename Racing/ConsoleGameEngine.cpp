@@ -19,12 +19,17 @@ ConsoleGameEngine::ConsoleGameEngine() {
 
 	m_bConsoleInFocus = true;
 	m_bEnableSound = false;
+	m_hideFPS = false;
 
 	m_sAppName = L"Default";
 }
 
 void ConsoleGameEngine::EnableSound() {
 	m_bEnableSound = true;
+}
+
+void ConsoleGameEngine::HideFPS(){
+	m_hideFPS = true;
 }
 
 int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fonth) {
@@ -579,7 +584,10 @@ void ConsoleGameEngine::GameThread() {
 
 			// Update Title & Present Screen Buffer
 			wchar_t s[256];
-			swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
+			if(m_hideFPS)
+				swprintf_s(s, 256, L"%s", m_sAppName.c_str());
+			else
+				swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 			SetConsoleTitle(s);
 			COORD bufferCoord;
 			COORD bufferSize;

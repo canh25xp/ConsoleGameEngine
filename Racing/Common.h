@@ -8,8 +8,6 @@ const COLOUR BORDER		 = BG_DARK_RED;
 const int dx[] = {1,0,-1,0};
 const int dy[] = {0,1,0,-1};
 
-const int BORDER_OFFSET = 10;
-
 class Point {
 public:
 	Point();
@@ -53,9 +51,13 @@ public:
 	void ClipTo(const Rect& boundary, int offset);
 	void ClipToTight(const Rect& boundary);
 	void ClipToTight(const Rect& boundary, int offset);
+
+	bool OutOfBound(const Rect& boundary);
 	
 	void DrawSelf(ConsoleGameEngine* engine) const;
 	
 	void SetPosition(int x, int y);
-	void RandomizePositionX(const Rect& boundary);
+	void RandomizeX(const Rect& boundary);
+
+	bool CollisionWith(const Rect& other) const;
 };
