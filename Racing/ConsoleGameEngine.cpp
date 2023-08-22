@@ -675,7 +675,7 @@ void ConsoleGameEngine::GameThread() {
 
 			// Update Title & Present Screen Buffer
 			wchar_t s[256];
-			swprintf_s(s, 256, L"OneLoneCoder.com - Console Game Engine - %s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
+			swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 			SetConsoleTitle(s);
 			WriteConsoleOutput(m_hConsole, m_bufScreen, {(short) m_nScreenWidth, (short) m_nScreenHeight}, {0,0}, &m_rectWindow);
 		}
@@ -728,7 +728,7 @@ ConsoleGameEngine::AudioSample::AudioSample(std::wstring sWavFile) {
 	// Note the -2, because the structure has 2 bytes to indicate its own size
 	// which are not in the wav file
 
-	// Just check if wave format is compatible with olcCGE
+// Just check if wave format is compatible with olcCGE
 	if (wavHeader.wBitsPerSample != 16 || wavHeader.nSamplesPerSec != 44100) {
 		std::fclose(f);
 		return;
