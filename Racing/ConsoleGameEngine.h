@@ -91,6 +91,7 @@ public:
 	bool Save(std::wstring sFile);
 
 	bool Load(std::wstring sFile);
+
 };
 
 class ConsoleGameEngine {
@@ -141,17 +142,13 @@ private:
 	void GameThread();
 
 public:
-	// User MUST OVERRIDE THESE!!
 	virtual bool OnUserCreate() = 0;
 	virtual bool OnUserUpdate(float fElapsedTime) = 0;
 
-	// Optional for clean up 
 	virtual bool OnUserDestroy();
 
-
-
-protected: // Audio Engine =====================================================================
-
+// Audio Engine =====================================================================
+protected:
 	class AudioSample {
 	public:
 		AudioSample();
@@ -177,6 +174,7 @@ protected: // Audio Engine =====================================================
 		bool bFinished = false;
 		bool bLoop = false;
 	};
+
 	std::list<sCurrentlyPlayingSample> listActiveSamples;
 
 	// Load a 16-bit WAVE file @ 44100Hz ONLY into memory. A sample ID
@@ -189,8 +187,7 @@ protected: // Audio Engine =====================================================
 	void StopSample(int id);
 
 	// The audio system uses by default a specific wave format
-	bool CreateAudio(unsigned int nSampleRate = 44100, unsigned int nChannels = 1,
-					 unsigned int nBlocks = 8, unsigned int nBlockSamples = 512);
+	bool CreateAudio(unsigned int nSampleRate = 44100, unsigned int nChannels = 1, unsigned int nBlocks = 8, unsigned int nBlockSamples = 512);
 
 	// Stop and clean up audio system
 	bool DestroyAudio();
