@@ -2,7 +2,7 @@
 
 int main() {
 	Game racing;
-	racing.ConstructConsole(200, 160, 4, 4);
+	racing.ConstructConsole(SCREEN_WIDTH, SCREEN_HEIGHT, PIXEL_SIZE, PIXEL_SIZE);
 	racing.Start();
 
 	return 0;

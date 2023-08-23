@@ -8,8 +8,12 @@ const int MAX_NPC = 5;
 const COLOUR BACK_GROUND = BG_BLACK;
 const COLOUR BORDER = BG_DARK_RED;
 
-const int BORDER_WIDTH = 120;
-const int BORDER_HEIGHT = 160;
+const int BORDER_WIDTH		= 100;
+const int BORDER_HEIGHT		= 160;
+
+const int SCREEN_WIDTH		= 200;
+const int SCREEN_HEIGHT		= 160;
+const int PIXEL_SIZE		= 4;
 
 class Game : public ConsoleGameEngine {
 public:
