@@ -4,9 +4,9 @@ using namespace std;
 
 #include "ConsoleGameEngine.h"
 
-class OneLoneCoder_SpriteEditor : public ConsoleGameEngine {
+class SpriteEditor : public ConsoleGameEngine {
 public:
-	OneLoneCoder_SpriteEditor() {
+	SpriteEditor() {
 		m_sAppName = L"Sprite Editor";
 		nPosX = 0;
 		nPosY = 0;
@@ -184,7 +184,7 @@ protected:
 
 int main() {
 	// Use olcConsoleGameEngine derived app
-	OneLoneCoder_SpriteEditor game;
+	SpriteEditor game;
 	game.ConstructConsole(160, 100, 8, 8);
 	game.Start();
 
