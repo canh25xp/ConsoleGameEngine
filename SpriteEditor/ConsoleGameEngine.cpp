@@ -1,5 +1,121 @@
 #include "ConsoleGameEngine.h"
 
+Sprite::Sprite() {
+	nWidth = 0;
+	nHeight = 0;
+	m_Glyphs = nullptr;
+	m_Colours = nullptr;
+}
+
+Sprite::Sprite(int w, int h) {
+	Create(w, h);
+}
+
+Sprite::Sprite(std::wstring sFile) {
+	nWidth = 0;
+	nHeight = 0;
+	m_Glyphs = nullptr;
+	m_Colours = nullptr;
+	if (!Load(sFile))
+		Create(8, 8);
+}
+
+void Sprite::Create(int w, int h) {
+	nWidth = w;
+	nHeight = h;
+	m_Glyphs = new short[w * h];
+	m_Colours = new short[w * h];
+	for (int i = 0; i < w * h; i++) {
+		m_Glyphs[i] = L' ';
+		m_Colours[i] = FG_BLACK;
+	}
+}
+
+void Sprite::SetGlyph(int x, int y, short c) {
+	if (x < 0 || x >= nWidth || y < 0 || y >= nHeight)
+		return;
+	else
+		m_Glyphs[y * nWidth + x] = c;
+}
+
+void Sprite::SetColour(int x, int y, short c) {
+	if (x < 0 || x >= nWidth || y < 0 || y >= nHeight)
+		return;
+	else
+		m_Colours[y * nWidth + x] = c;
+}
+
+short Sprite::GetGlyph(int x, int y) {
+	if (x < 0 || x >= nWidth || y < 0 || y >= nHeight)
+		return L' ';
+	else
+		return m_Glyphs[y * nWidth + x];
+}
+
+short Sprite::GetColour(int x, int y) {
+	if (x < 0 || x >= nWidth || y < 0 || y >= nHeight)
+		return FG_BLACK;
+	else
+		return m_Colours[y * nWidth + x];
+}
+
+short Sprite::SampleGlyph(float x, float y) {
+	int sx = (int) (x * (float) nWidth);
+	int sy = (int) (y * (float) nHeight - 1.0f);
+	if (sx < 0 || sx >= nWidth || sy < 0 || sy >= nHeight)
+		return L' ';
+	else
+		return m_Glyphs[sy * nWidth + sx];
+}
+
+short Sprite::SampleColour(float x, float y) {
+	int sx = (int) (x * (float) nWidth);
+	int sy = (int) (y * (float) nHeight - 1.0f);
+	if (sx < 0 || sx >= nWidth || sy < 0 || sy >= nHeight)
+		return FG_BLACK;
+	else
+		return m_Colours[sy * nWidth + sx];
+}
+
+bool Sprite::Save(std::wstring sFile) {
+	FILE* f = nullptr;
+	_wfopen_s(&f, sFile.c_str(), L"wb");
+	if (f == nullptr)
+		return false;
+
+	fwrite(&nWidth, sizeof(int), 1, f);
+	fwrite(&nHeight, sizeof(int), 1, f);
+	fwrite(m_Colours, sizeof(short), nWidth * nHeight, f);
+	fwrite(m_Glyphs, sizeof(short), nWidth * nHeight, f);
+
+	fclose(f);
+
+	return true;
+}
+
+bool Sprite::Load(std::wstring sFile) {
+	delete[] m_Glyphs;
+	delete[] m_Colours;
+	nWidth = 0;
+	nHeight = 0;
+
+	FILE* f = nullptr;
+	_wfopen_s(&f, sFile.c_str(), L"rb");
+	if (f == nullptr)
+		return false;
+
+	std::fread(&nWidth, sizeof(int), 1, f);
+	std::fread(&nHeight, sizeof(int), 1, f);
+
+	Create(nWidth, nHeight);
+
+	std::fread(m_Colours, sizeof(short), nWidth * nHeight, f);
+	std::fread(m_Glyphs, sizeof(short), nWidth * nHeight, f);
+
+	std::fclose(f);
+	return true;
+}
+
 ConsoleGameEngine::ConsoleGameEngine() {
 	m_nScreenWidth = 80;
 	m_nScreenHeight = 30;
@@ -7,10 +123,10 @@ ConsoleGameEngine::ConsoleGameEngine() {
 	m_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	m_hConsoleIn = GetStdHandle(STD_INPUT_HANDLE);
 
-	std::memset(m_keyNewState, 0, sizeof(m_keyNewState));
-	std::memset(m_keyOldState, 0, sizeof(m_keyOldState));
-	std::memset(m_mouseNewState, 0, sizeof(m_mouseOldState));
-	std::memset(m_mouseOldState, 0, sizeof(m_mouseOldState));
+	std::memset(m_keyNewState, 0, 256 * sizeof(short));
+	std::memset(m_keyOldState, 0, 256 * sizeof(short));
+	std::memset(m_mouseNewState, 0, 5 * sizeof(short));
+	std::memset(m_mouseOldState, 0, 5 * sizeof(short));
 	std::memset(m_keys, 0, 256 * sizeof(sKeyState));
 	std::memset(m_mouse, 0, 5 * sizeof(sKeyState));
 
@@ -19,17 +135,12 @@ ConsoleGameEngine::ConsoleGameEngine() {
 
 	m_bConsoleInFocus = true;
 	m_bEnableSound = false;
-	m_hideFPS = false;
 
 	m_sAppName = L"Default";
 }
 
 void ConsoleGameEngine::EnableSound() {
 	m_bEnableSound = true;
-}
-
-void ConsoleGameEngine::HideFPS(){
-	m_hideFPS = true;
 }
 
 int ConsoleGameEngine::ConstructConsole(int width, int height, int fontw, int fonth) {
@@ -399,6 +510,29 @@ void ConsoleGameEngine::DrawSprite(int x, int y, Sprite* sprite) {
 	}
 }
 
+void ConsoleGameEngine::DrawMirror(int x, int y, short c, short col){
+	if (x >= 0 && x < m_nScreenWidth && y >= 0 && y < m_nScreenHeight) {
+		m_bufScreen[y * m_nScreenWidth + x].Char.UnicodeChar = c;
+		m_bufScreen[y * m_nScreenWidth + x].Attributes = col;
+	}
+	else{
+		m_bufScreen[(y - m_nScreenHeight) * m_nScreenWidth + x ].Char.UnicodeChar = c;
+		m_bufScreen[(y - m_nScreenHeight) * m_nScreenWidth + x ].Attributes = col;		
+	}
+}
+
+void ConsoleGameEngine::DrawSpriteMirror(int x, int y, Sprite* sprite) {
+	if (sprite == nullptr)
+		return;
+
+	for (int i = 0; i < sprite->nWidth; i++) {
+		for (int j = 0; j < sprite->nHeight; j++) {
+			if (sprite->GetGlyph(i, j) != L' ')
+				DrawMirror(x + i, y + j, sprite->GetGlyph(i, j), sprite->GetColour(i, j));
+		}
+	}
+}
+
 void ConsoleGameEngine::DrawPartialSprite(int x, int y, Sprite* sprite, int ox, int oy, int w, int h) {
 	if (sprite == nullptr)
 		return;
@@ -584,10 +718,7 @@ void ConsoleGameEngine::GameThread() {
 
 			// Update Title & Present Screen Buffer
 			wchar_t s[256];
-			if(m_hideFPS)
-				swprintf_s(s, 256, L"%s", m_sAppName.c_str());
-			else
-				swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
+			swprintf_s(s, 256, L"%s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 			SetConsoleTitle(s);
 			COORD bufferCoord;
 			COORD bufferSize;
@@ -820,9 +951,9 @@ void ConsoleGameEngine::AudioThread() {
 
 		auto clip = [] (float fSample, float fMax) {
 			if (fSample >= 0.0)
-				return max(fSample, fMax);
+				return min(fSample, fMax);
 			else
-				return min(fSample, -fMax);
+				return max(fSample, -fMax);
 			};
 
 		for (unsigned int n = 0; n < m_nBlockSamples; n += m_nChannels) {
@@ -871,6 +1002,7 @@ float ConsoleGameEngine::onUserSoundFilter(int nChannel, float fGlobalTime, floa
 // Finally, before the sound is issued to the operating system for performing, the
 // user gets one final chance to "filter" the sound, perhaps changing the volume
 // or adding funky effects
+
 float ConsoleGameEngine::GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep) {
 	// Accumulate sample for this channel
 	float fMixerSample = 0.0f;
@@ -894,6 +1026,10 @@ float ConsoleGameEngine::GetMixerOutput(int nChannel, float fGlobalTime, float f
 
 	// Return the sample via an optional user override to filter the sound
 	return onUserSoundFilter(nChannel, fGlobalTime, fMixerSample);
+}
+
+ConsoleGameEngine::sKeyState ConsoleGameEngine::GetKey(int nKeyID) {
+	return m_keys[nKeyID];
 }
 
 int ConsoleGameEngine::GetMouseX() {
@@ -928,122 +1064,6 @@ BOOL ConsoleGameEngine::CloseHandler(DWORD evt) {
 		std::unique_lock<std::mutex> ul(m_muxGame);
 		m_cvGameFinished.wait(ul);
 	}
-	return true;
-}
-
-Sprite::Sprite() {
-	nWidth = 0;
-	nHeight = 0;
-	m_Glyphs = nullptr;
-	m_Colours = nullptr;
-}
-
-Sprite::Sprite(int w, int h) {
-	Create(w, h);
-}
-
-Sprite::Sprite(std::wstring sFile) {
-	nWidth = 0;
-	nHeight = 0;
-	m_Glyphs = nullptr;
-	m_Colours = nullptr;
-	if (!Load(sFile))
-		Create(8, 8);
-}
-
-void Sprite::Create(int w, int h) {
-	nWidth = w;
-	nHeight = h;
-	m_Glyphs = new short[w * h];
-	m_Colours = new short[w * h];
-	for (int i = 0; i < w * h; i++) {
-		m_Glyphs[i] = L' ';
-		m_Colours[i] = FG_BLACK;
-	}
-}
-
-void Sprite::SetGlyph(int x, int y, short c) {
-	if (x < 0 || x >= nWidth || y < 0 || y >= nHeight)
-		return;
-	else
-		m_Glyphs[y * nWidth + x] = c;
-}
-
-void Sprite::SetColour(int x, int y, short c) {
-	if (x < 0 || x >= nWidth || y < 0 || y >= nHeight)
-		return;
-	else
-		m_Colours[y * nWidth + x] = c;
-}
-
-short Sprite::GetGlyph(int x, int y) {
-	if (x < 0 || x >= nWidth || y < 0 || y >= nHeight)
-		return L' ';
-	else
-		return m_Glyphs[y * nWidth + x];
-}
-
-short Sprite::GetColour(int x, int y) {
-	if (x < 0 || x >= nWidth || y < 0 || y >= nHeight)
-		return FG_BLACK;
-	else
-		return m_Colours[y * nWidth + x];
-}
-
-short Sprite::SampleGlyph(float x, float y) {
-	int sx = (int) (x * (float) nWidth);
-	int sy = (int) (y * (float) nHeight - 1.0f);
-	if (sx < 0 || sx >= nWidth || sy < 0 || sy >= nHeight)
-		return L' ';
-	else
-		return m_Glyphs[sy * nWidth + sx];
-}
-
-short Sprite::SampleColour(float x, float y) {
-	int sx = (int) (x * (float) nWidth);
-	int sy = (int) (y * (float) nHeight - 1.0f);
-	if (sx < 0 || sx >= nWidth || sy < 0 || sy >= nHeight)
-		return FG_BLACK;
-	else
-		return m_Colours[sy * nWidth + sx];
-}
-
-bool Sprite::Save(std::wstring sFile) {
-	FILE* f = nullptr;
-	_wfopen_s(&f, sFile.c_str(), L"wb");
-	if (f == nullptr)
-		return false;
-
-	fwrite(&nWidth, sizeof(int), 1, f);
-	fwrite(&nHeight, sizeof(int), 1, f);
-	fwrite(m_Colours, sizeof(short), nWidth * nHeight, f);
-	fwrite(m_Glyphs, sizeof(short), nWidth * nHeight, f);
-
-	fclose(f);
-
-	return true;
-}
-
-bool Sprite::Load(std::wstring sFile) {
-	delete[] m_Glyphs;
-	delete[] m_Colours;
-	nWidth = 0;
-	nHeight = 0;
-
-	FILE* f = nullptr;
-	_wfopen_s(&f, sFile.c_str(), L"rb");
-	if (f == nullptr)
-		return false;
-
-	std::fread(&nWidth, sizeof(int), 1, f);
-	std::fread(&nHeight, sizeof(int), 1, f);
-
-	Create(nWidth, nHeight);
-
-	std::fread(m_Colours, sizeof(short), nWidth * nHeight, f);
-	std::fread(m_Glyphs, sizeof(short), nWidth * nHeight, f);
-
-	std::fclose(f);
 	return true;
 }
 

@@ -1,44 +1,3 @@
-/*
-Author
-Twitter: @javidx9	http://twitter.com/javidx9
-Blog:				http://www.onelonecoder.com
-YouTube:			http://www.youtube.com/javidx9
-Last Updated: 02/07/2018
-~~~~~~
-Usage:
-~~~~~~
-This class is abstract, so you must inherit from it. Override the OnUserCreate() function
-with all the stuff you need for your application (for thready reasons it's best to do
-this in this function and not your class constructor). Override the OnUserUpdate(float fElapsedTime)
-function with the good stuff, it gives you the elapsed time since the last call so you
-can modify your stuff dynamically. Both functions should return true, unless you need
-the application to close.
-
-	int main()
-	{
-		// Use ConsoleGameEngine derived app
-		OneLoneCoder_Example game;
-
-		// Create a console with resolution 160x100 characters
-		// Each character occupies 8x8 pixels
-		game.ConstructConsole(160, 100, 8, 8);
-
-		// Start the engine!
-		game.Start();
-
-		return 0;
-	}
-
-Input is also handled for you - interrogate the m_keys[] array with the virtual
-keycode you want to know about. bPressed is set for the frame the key is pressed down
-in, bHeld is set if the key is held down, bReleased is set for the frame the key
-is released in. The same applies to mouse! m_mousePosX and Y can be used to get
-the current cursor position, and m_mouse[1..5] returns the mouse buttons.
-
-The draw routines treat characters like pixels. By default they are set to white solid
-blocks - but you can draw any unicode character, using any of the colours listed below.
-*/
-
 #pragma once
 #pragma comment(lib, "winmm.lib")
 
@@ -107,12 +66,12 @@ public:
 
 	Sprite(std::wstring sFile);
 
-	int nWidth;
-	int nHeight;
+	int nWidth;		//0
+	int nHeight;	//0
 
 private:
-	short* m_Glyphs;
-	short* m_Colours;
+	short* m_Glyphs;	//nullptr
+	short* m_Colours;	//nullptr
 
 	void Create(int w, int h);
 
@@ -143,13 +102,11 @@ public:
 
 	void EnableSound();
 
-	void HideFPS();
-
 	int ConstructConsole(int width, int height, int fontw, int fonth);
 
-	virtual void Draw(int x, int y, short c = 0x2588, short col = COLOUR::FG_WHITE);
+	virtual void Draw(int x, int y, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
 
-	void Fill(int x1, int y1, int x2, int y2, short c = 0x2588, short col = COLOUR::FG_WHITE);
+	void Fill(int x1, int y1, int x2, int y2, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
 
 	void DrawString(int x, int y, std::wstring c, short col = COLOUR::FG_WHITE);
 
@@ -157,21 +114,25 @@ public:
 
 	void Clip(int& x, int& y);
 
-	void DrawLine(int x1, int y1, int x2, int y2, short c = 0x2588, short col = COLOUR::FG_WHITE);
+	void DrawLine(int x1, int y1, int x2, int y2, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
 
-	void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = COLOUR::FG_WHITE);
+	void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
 
-	void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = COLOUR::FG_WHITE);
+	void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
 
-	void DrawCircle(int xc, int yc, int r, short c = 0x2588, short col = COLOUR::FG_WHITE);
+	void DrawCircle(int xc, int yc, int r, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
 
-	void FillCircle(int xc, int yc, int r, short c = 0x2588, short col = COLOUR::FG_WHITE);
+	void FillCircle(int xc, int yc, int r, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
 
 	void DrawSprite(int x, int y, Sprite* sprite);
 
+	void DrawMirror(int x, int y, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
+
+	void DrawSpriteMirror(int x, int y, Sprite* sprite);
+
 	void DrawPartialSprite(int x, int y, Sprite* sprite, int ox, int oy, int w, int h);
 
-	void DrawWireFrameModel(const std::vector<std::pair<float, float>>& vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1.0f, short col = COLOUR::FG_WHITE, short c = PIXEL_SOLID);
+	void DrawWireFrameModel(const std::vector<std::pair<float, float>>& vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1.0f, short col = COLOUR::FG_WHITE, short c = PIXEL_TYPE::PIXEL_SOLID);
 
 public:
 	void Start();
@@ -189,7 +150,7 @@ public:
 
 	virtual bool OnUserDestroy();
 
-// Audio Engine =====================================================================
+///////////////////////////Audio Engine/////////////////
 protected:
 	class AudioSample {
 	public:
@@ -301,7 +262,7 @@ protected:
 	int m_mousePosY;
 
 public:
-	sKeyState GetKey;
+	sKeyState GetKey(int nKeyID);
 	int GetMouseX();
 	int GetMouseY();
 	sKeyState GetMouse(int nMouseButtonID);
@@ -328,7 +289,6 @@ protected:
 	bool m_mouseNewState[5];	//0
 	bool m_bConsoleInFocus;		//true
 	bool m_bEnableSound;		//false
-	bool m_hideFPS;
 
 	// These need to be static because of the OnDestroy call the OS may make. The OS
 	// spawns a special thread just for that
