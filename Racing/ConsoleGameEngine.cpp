@@ -1,7 +1,10 @@
 #include "ConsoleGameEngine.h"
 
 Sprite::Sprite() {
-
+	nWidth = 0;
+	nHeight = 0;
+	m_Glyphs = nullptr;
+	m_Colours = nullptr;
 }
 
 Sprite::Sprite(int w, int h) {
@@ -9,6 +12,10 @@ Sprite::Sprite(int w, int h) {
 }
 
 Sprite::Sprite(std::wstring sFile) {
+	nWidth = 0;
+	nHeight = 0;
+	m_Glyphs = nullptr;
+	m_Colours = nullptr;
 	if (!Load(sFile))
 		Create(8, 8);
 }
@@ -116,12 +123,12 @@ ConsoleGameEngine::ConsoleGameEngine() {
 	m_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	m_hConsoleIn = GetStdHandle(STD_INPUT_HANDLE);
 
-	std::memset(m_keyNewState, 0, sizeof(m_keyNewState));
-	std::memset(m_keyOldState, 0, sizeof(m_keyOldState));
-	std::memset(m_mouseNewState, 0, sizeof(m_mouseNewState));
-	std::memset(m_mouseOldState, 0, sizeof(m_mouseOldState));
-	std::memset(m_keys, 0, sizeof(m_keys));
-	std::memset(m_mouse, 0, sizeof(m_mouse));
+	std::memset(m_keyNewState, 0, 256 * sizeof(short));
+	std::memset(m_keyOldState, 0, 256 * sizeof(short));
+	std::memset(m_mouseNewState, 0, 5 * sizeof(short));
+	std::memset(m_mouseOldState, 0, 5 * sizeof(short));
+	std::memset(m_keys, 0, 256 * sizeof(sKeyState));
+	std::memset(m_mouse, 0, 5 * sizeof(sKeyState));
 
 	m_mousePosX = 0;
 	m_mousePosY = 0;
@@ -499,6 +506,29 @@ void ConsoleGameEngine::DrawSprite(int x, int y, Sprite* sprite) {
 		for (int j = 0; j < sprite->nHeight; j++) {
 			if (sprite->GetGlyph(i, j) != L' ')
 				Draw(x + i, y + j, sprite->GetGlyph(i, j), sprite->GetColour(i, j));
+		}
+	}
+}
+
+void ConsoleGameEngine::DrawMirror(int x, int y, short c, short col){
+	if (x >= 0 && x < m_nScreenWidth && y >= 0 && y < m_nScreenHeight) {
+		m_bufScreen[y * m_nScreenWidth + x].Char.UnicodeChar = c;
+		m_bufScreen[y * m_nScreenWidth + x].Attributes = col;
+	}
+	else{
+		m_bufScreen[(y - m_nScreenHeight) * m_nScreenWidth + x ].Char.UnicodeChar = c;
+		m_bufScreen[(y - m_nScreenHeight) * m_nScreenWidth + x ].Attributes = col;		
+	}
+}
+
+void ConsoleGameEngine::DrawSpriteMirror(int x, int y, Sprite* sprite) {
+	if (sprite == nullptr)
+		return;
+
+	for (int i = 0; i < sprite->nWidth; i++) {
+		for (int j = 0; j < sprite->nHeight; j++) {
+			if (sprite->GetGlyph(i, j) != L' ')
+				DrawMirror(x + i, y + j, sprite->GetGlyph(i, j), sprite->GetColour(i, j));
 		}
 	}
 }

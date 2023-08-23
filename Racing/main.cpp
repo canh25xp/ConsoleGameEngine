@@ -2,7 +2,7 @@
 
 int main() {
 	Game racing;
-	racing.ConstructConsole(160, 160, 4, 4);
+	racing.ConstructConsole(200, 160, 4, 4);
 	racing.Start();
 
 	return 0;

@@ -66,12 +66,12 @@ public:
 
 	Sprite(std::wstring sFile);
 
-	int nWidth = 0;
-	int nHeight = 0;
+	int nWidth;		//0
+	int nHeight;	//0
 
 private:
-	short* m_Glyphs = nullptr;
-	short* m_Colours = nullptr;
+	short* m_Glyphs;	//nullptr
+	short* m_Colours;	//nullptr
 
 	void Create(int w, int h);
 
@@ -126,6 +126,10 @@ public:
 
 	void DrawSprite(int x, int y, Sprite* sprite);
 
+	void DrawMirror(int x, int y, short c = PIXEL_TYPE::PIXEL_SOLID, short col = COLOUR::FG_WHITE);
+
+	void DrawSpriteMirror(int x, int y, Sprite* sprite);
+
 	void DrawPartialSprite(int x, int y, Sprite* sprite, int ox, int oy, int w, int h);
 
 	void DrawWireFrameModel(const std::vector<std::pair<float, float>>& vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1.0f, short col = COLOUR::FG_WHITE, short c = PIXEL_TYPE::PIXEL_SOLID);
@@ -146,7 +150,7 @@ public:
 
 	virtual bool OnUserDestroy();
 
-// Audio Engine =====================================================================
+///////////////////////////Audio Engine/////////////////
 protected:
 	class AudioSample {
 	public:
@@ -155,10 +159,11 @@ protected:
 		AudioSample(std::wstring sWavFile);
 
 		WAVEFORMATEX wavHeader;
-		float* fSample = nullptr;
-		long nSamples = 0;
-		int nChannels = 0;
-		bool bSampleValid = false;
+
+		float* fSample;		//nullptr
+		long nSamples;		//0
+		int nChannels;		//0
+		bool bSampleValid;	//false
 	};
 
 	// This vector holds all loaded sound samples in memory
@@ -168,10 +173,10 @@ protected:
 	// holds the sound ID and where this instance of it is up to for its
 	// current playback
 	struct sCurrentlyPlayingSample {
-		int nAudioSampleID = 0;
-		long nSamplePosition = 0;
-		bool bFinished = false;
-		bool bLoop = false;
+		int nAudioSampleID;		//0
+		long nSamplePosition;	//0
+		bool bFinished;			//false
+		bool bLoop;				//false
 	};
 
 	std::list<sCurrentlyPlayingSample> listActiveSamples;
@@ -234,16 +239,16 @@ protected:
 	unsigned int m_nBlockSamples;
 	unsigned int m_nBlockCurrent;
 
-	short* m_pBlockMemory = nullptr;
-	WAVEHDR* m_pWaveHeaders = nullptr;
-	HWAVEOUT m_hwDevice = nullptr;
+	short* m_pBlockMemory;		//nullptr
+	WAVEHDR* m_pWaveHeaders;	//nullptr
+	HWAVEOUT m_hwDevice;		//nullptr
 
 	std::thread m_AudioThread;
-	std::atomic<bool> m_bAudioThreadActive = false;
-	std::atomic<unsigned int> m_nBlockFree = 0;
+	std::atomic<bool> m_bAudioThreadActive;		//false
+	std::atomic<unsigned int> m_nBlockFree;		//0
 	std::condition_variable m_cvBlockNotZero;
 	std::mutex m_muxBlockNotZero;
-	std::atomic<float> m_fGlobalTime = 0.0f;
+	std::atomic<float> m_fGlobalTime;			//0.0f
 
 protected:
 
@@ -278,12 +283,12 @@ protected:
 	HANDLE m_hConsole;
 	HANDLE m_hConsoleIn;
 	SMALL_RECT m_rectWindow;
-	short m_keyOldState[256] = {0};
-	short m_keyNewState[256] = {0};
-	bool m_mouseOldState[5] = {0};
-	bool m_mouseNewState[5] = {0};
-	bool m_bConsoleInFocus = true;
-	bool m_bEnableSound = false;
+	short m_keyOldState[256];	//0
+	short m_keyNewState[256];	//0
+	bool m_mouseOldState[5];	//0
+	bool m_mouseNewState[5];	//0
+	bool m_bConsoleInFocus;		//true
+	bool m_bEnableSound;		//false
 
 	// These need to be static because of the OnDestroy call the OS may make. The OS
 	// spawns a special thread just for that

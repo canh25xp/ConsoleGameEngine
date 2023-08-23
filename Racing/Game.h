@@ -1,8 +1,9 @@
 #pragma once
 #include "ConsoleGameEngine.h"
 #include "Car.h"
+#include "font.h"
 
-const int MAX_NPC = 4;
+const int MAX_NPC = 5;
 
 const COLOUR BACK_GROUND = BG_BLACK;
 const COLOUR BORDER = BG_DARK_RED;
@@ -28,10 +29,16 @@ public:
 	void DrawBorder();
 	void InitPlayer();
 
+	int score;
+
 private:
 	Rect* pBorder;
 	Car* pPlayer;
+	//Car* pPlayer2;
 	Car* m_npc[MAX_NPC];
+	Font* pFont;
+
+	//Sprite* pMap[4];
 
 private:
 	float interval;

@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="Car.h" />
     <ClInclude Include="ConsoleGameEngine.h" />
+    <ClInclude Include="font.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Point.h" />
@@ -169,6 +170,7 @@
   <ItemGroup>
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="ConsoleGameEngine.cpp" />
+    <ClCompile Include="font.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />

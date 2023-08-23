@@ -10,22 +10,37 @@ Game::Game() {
 	for (int i = 0; i < MAX_NPC; i++)
 		m_npc[i] = nullptr;
 
+	pFont = nullptr;
+
 	interval = 0;
 	timeSinceStart = 0;
 	hitSoundEffect = 0;
+	score = 0;
 
 	EnableSound();
 }
 
 bool Game::OnUserCreate() {
+	//pMap[0] = new Sprite(L"assets/map1x1.spr");
+	//pMap[1] = new Sprite(L"assets/map1x2.spr");
+	//pMap[2] = new Sprite(L"assets/map2x1.spr");
+	//pMap[3] = new Sprite(L"assets/map2x2.spr");
+
+
+
 	pBorder = new Rect(0, 0, BORDER_WIDTH, BORDER_HEIGHT);
 
 	//Load player sprite
-	pPlayer = new Car(L"assets/car1.spr");
+	pPlayer = new Car(L"assets/car4.spr");
+	//pPlayer2 = new Car(L"assets/car2.spr");
 
 	//Load NPC sprite
 	for (int i = 0; i < MAX_NPC; i++)
 		m_npc[i] = new Car(L"assets/car2.spr");
+
+	pFont = new Font(L"fontSmall");
+
+	pFont->LoadFont();
 
 	//Randomize NPC's X coordinate, restricted by the border
 	for (int i = 0; i < MAX_NPC; i++) {
@@ -41,15 +56,42 @@ bool Game::OnUserCreate() {
 
 bool Game::OnUserUpdate(float fElapsedTime) {
 	ClearScreen();
+
+	//DrawSprite(0,0, pMap[0]);
+	//DrawSprite(60,0, pMap[1]);
+	//DrawSprite(0,80, pMap[2]);
+	//DrawSprite(60,80, pMap[3]);
+
+	//int k = 0;
+	//Fill(0,0,2,159, PIXEL_SOLID, FG_WHITE);
+	//Fill(118,0,120,159, PIXEL_SOLID, FG_WHITE);
+	//for(int i = 0; i <= 1; i++){
+	//	for (int j = 0; j < BORDER_HEIGHT; j++){
+	//		if (j % 8 >= k && j % 8 <= k + 3){
+	//			Draw(59 + i, j, PIXEL_SOLID, FG_DARK_YELLOW);
+	//		}
+	//	}
+	//}
+	//if (k == 4) k = 0;
+	//k++;
+
+	
+
+	pFont->Print(this, "SCORE", BORDER_WIDTH + 10, BORDER_HEIGHT / 2);
+	//pFont->Print(this, 1, 0, 0);
+
 	timeSinceStart += fElapsedTime;
 	interval += fElapsedTime;
 
-	//if (m_keys[VK_UP].bHeld) {
-	//	pPlayer->MoveUp(1);
+	if(timeSinceStart > 0.001)
+		score++;
+
+	//if (m_keys['A'].bHeld) {
+	//	pPlayer2->MoveLeft(1);
 	//}
 
-	//if (m_keys[VK_DOWN].bHeld) {
-	//	pPlayer->MoveDown(1);
+	//if (m_keys['D'].bHeld) {
+	//	pPlayer2->MoveRight(1);
 	//}
 
 	if (m_keys[VK_RIGHT].bHeld) {
@@ -60,14 +102,15 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		pPlayer->MoveLeft(1);
 	}
 
-	if (interval > 0.005) {
+	if (interval > 0.0005) {
 		for (int i = 0; i < MAX_NPC; i++) {
 			m_npc[i]->MoveDown(1);
 		}
 		interval = 0;
 	}
 
-	pPlayer->ClipToTight(*pBorder, 1);
+	pPlayer->ClipToTight(*pBorder, 2);
+	//pPlayer2->ClipToTight(*pBorder, 2);
 
 	for (int i = 0; i < MAX_NPC; i++) {
 		if (pPlayer->CollisionWith(*m_npc[i])) {
@@ -82,6 +125,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 	}
 
 	pPlayer->DrawSelf(this);
+	//pPlayer2->DrawSelf(this);
 
 	for (int i = 0; i < MAX_NPC; i++) {
 		m_npc[i]->DrawSelf(this);
@@ -96,7 +140,8 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 	}
 
 	pBorder->DrawSelf(this, PIXEL_BLANK, BG_DARK_RED);
-	//DrawBorder();
+
+	////DrawBorder();
 
 	return true;
 }
@@ -152,4 +197,6 @@ void Game::DrawBorder() {
 
 void Game::InitPlayer() {
 	pPlayer->SetPosition(60, pBorder->Bottom() - 2 * pPlayer->Height());
+	//pPlayer2->SetPosition(80, pBorder->Bottom() - 2 * pPlayer->Height());
+
 }
