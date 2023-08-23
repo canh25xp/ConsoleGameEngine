@@ -47,6 +47,85 @@
     <None Include="assets\car2.spr">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="fontSmall\Z.spr" />
+    <None Include="fontSmall\0.spr" />
+    <None Include="fontSmall\1.spr" />
+    <None Include="fontSmall\2.spr" />
+    <None Include="fontSmall\3.spr" />
+    <None Include="fontSmall\4.spr" />
+    <None Include="fontSmall\5.spr" />
+    <None Include="fontSmall\6.spr" />
+    <None Include="fontSmall\7.spr" />
+    <None Include="fontSmall\8.spr" />
+    <None Include="fontSmall\9.spr" />
+    <None Include="fontSmall\A.spr" />
+    <None Include="fontSmall\B.spr" />
+    <None Include="fontSmall\C.spr" />
+    <None Include="fontSmall\D.spr" />
+    <None Include="fontSmall\E.spr" />
+    <None Include="fontSmall\F.spr" />
+    <None Include="fontSmall\G.spr" />
+    <None Include="fontSmall\H.spr" />
+    <None Include="fontSmall\I.spr" />
+    <None Include="fontSmall\J.spr" />
+    <None Include="fontSmall\K.spr" />
+    <None Include="fontSmall\L.spr" />
+    <None Include="fontSmall\M.spr" />
+    <None Include="fontSmall\N.spr" />
+    <None Include="fontSmall\O.spr" />
+    <None Include="fontSmall\P.spr" />
+    <None Include="fontSmall\Q.spr" />
+    <None Include="fontSmall\R.spr" />
+    <None Include="fontSmall\S.spr" />
+    <None Include="fontSmall\T.spr" />
+    <None Include="fontSmall\U.spr" />
+    <None Include="fontSmall\V.spr" />
+    <None Include="fontSmall\W.spr" />
+    <None Include="fontSmall\X.spr" />
+    <None Include="fontSmall\Y.spr" />
+    <None Include="font\0.spr" />
+    <None Include="font\1.spr" />
+    <None Include="font\2.spr" />
+    <None Include="font\3.spr" />
+    <None Include="font\4.spr" />
+    <None Include="font\5.spr" />
+    <None Include="font\6.spr" />
+    <None Include="font\7.spr" />
+    <None Include="font\8.spr" />
+    <None Include="font\9.spr" />
+    <None Include="font\A.spr" />
+    <None Include="font\B.spr" />
+    <None Include="font\C.spr" />
+    <None Include="font\Colon.spr" />
+    <None Include="font\D.spr" />
+    <None Include="font\E.spr" />
+    <None Include="font\F.spr" />
+    <None Include="font\G.spr" />
+    <None Include="font\H.spr" />
+    <None Include="font\I.spr" />
+    <None Include="font\J.spr" />
+    <None Include="font\K.spr" />
+    <None Include="font\L.spr" />
+    <None Include="font\M.spr" />
+    <None Include="font\N.spr" />
+    <None Include="font\O.spr" />
+    <None Include="font\P.spr" />
+    <None Include="font\Q.spr" />
+    <None Include="font\R.spr" />
+    <None Include="font\S.spr" />
+    <None Include="font\T.spr" />
+    <None Include="font\U.spr" />
+    <None Include="font\V.spr" />
+    <None Include="font\W.spr" />
+    <None Include="font\X.spr" />
+    <None Include="font\Y.spr" />
+    <None Include="font\Z.spr" />
+    <None Include="assets\car3.spr" />
+    <None Include="assets\car4.spr" />
+    <None Include="assets\map1x1.spr" />
+    <None Include="assets\map1x2.spr" />
+    <None Include="assets\map2x1.spr" />
+    <None Include="assets\map2x2.spr" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\Car1.png">
@@ -58,6 +137,12 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="assets\vine_boom.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="assets\crash.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="assets\start.wav">
       <Filter>Resource Files</Filter>
     </Media>
   </ItemGroup>
