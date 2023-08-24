@@ -29,4 +29,6 @@ public:
 
 	int GetX() const;
 	int GetY() const;
+
+	friend class Font;
 };

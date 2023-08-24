@@ -3,17 +3,28 @@
 #include "Car.h"
 #include "font.h"
 
-const int MAX_NPC = 5;
+// define 1 to enable multi-player, define zero to disable
+#define MULTI_PLAYER 0
 
-const COLOUR BACK_GROUND = BG_BLACK;
-const COLOUR BORDER = BG_DARK_RED;
+// numbers of NPC to be render at the same time
+const int NPC = 4;
 
-const int BORDER_WIDTH		= 100;
-const int BORDER_HEIGHT		= 160;
+const COLOUR BACK_GROUND	= BG_BLACK;
+const COLOUR BORDER			= BG_DARK_RED;
 
 const int SCREEN_WIDTH		= 200;
 const int SCREEN_HEIGHT		= 160;
 const int PIXEL_SIZE		= 4;
+
+const int BORDER_X			= 0;
+const int BORDER_Y			= 0;
+const int BORDER_WIDTH		= 100;
+const int BORDER_HEIGHT		= 160;
+
+const int MENU_X			= BORDER_WIDTH;
+const int MENU_Y			= 0;
+const int MENU_WIDTH		= SCREEN_WIDTH - BORDER_WIDTH;
+const int MENU_HEIGHT		= SCREEN_HEIGHT;
 
 class Game : public ConsoleGameEngine {
 public:
@@ -31,21 +42,30 @@ public:
 	void WaitKey(int vKey);
 	void FillGrid();
 	void DrawBorder();
-	void InitPlayer();
 
-	int score;
+	void Spawn(Car* car);
 
 private:
 	Rect* pBorder;
-	Car* pPlayer;
-	//Car* pPlayer2;
-	Car* m_npc[MAX_NPC];
-	Font* pFont;
 
-	//Sprite* pMap[4];
+	Car* pPlayer_1;
+
+#if MULTI_PLAYER
+	Car* pPlayer_2;
+#endif
+
+	Car* pNpc[NPC];
+
+	Font* pFont;
+	Font* pTitleFont;
 
 private:
+	int score;
+	int speed;
 	float interval;
+	float delay;
 	float timeSinceStart;
 	int hitSoundEffect;
+
+	bool gameOver;
 };

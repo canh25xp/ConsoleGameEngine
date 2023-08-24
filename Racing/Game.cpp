@@ -1,66 +1,77 @@
 #include "Game.h"
 
-using namespace std::chrono;
-
 Game::Game() {
 	m_sAppName = L"Racing";
-	pBorder = nullptr;
-	pPlayer = nullptr;
 
-	for (int i = 0; i < MAX_NPC; i++)
-		m_npc[i] = nullptr;
+	pBorder = nullptr;
+
+	pPlayer_1 = nullptr;
+
+#if MULTI_PLAYER
+	pPlayer_2 = nullptr;
+#endif // MULTI_PLAYER
+
+	for (int i = 0; i < NPC; i++)
+		pNpc[i] = nullptr;
 
 	pFont = nullptr;
 
+	speed = 0;
 	interval = 0;
+	delay = 0;
 	timeSinceStart = 0;
 	hitSoundEffect = 0;
 	score = 0;
+	gameOver = false;
 
 	EnableSound();
 }
 
 bool Game::OnUserCreate() {
-	//pMap[0] = new Sprite(L"assets/map1x1.spr");
-	//pMap[1] = new Sprite(L"assets/map1x2.spr");
-	//pMap[2] = new Sprite(L"assets/map2x1.spr");
-	//pMap[3] = new Sprite(L"assets/map2x2.spr");
+	// Instantiate border
+	pBorder = new Rect(BORDER_X, BORDER_Y, BORDER_WIDTH, BORDER_HEIGHT);
 
+	// Load players sprite
+	pPlayer_1 = new Car(L"assets/car4.spr");
 
+#if MULTI_PLAYER
+	pPlayer_2 = new Car(L"assets/car2.spr");
+#endif
 
-	pBorder = new Rect(0, 0, BORDER_WIDTH, BORDER_HEIGHT);
-
-	//Load player sprite
-	pPlayer = new Car(L"assets/car4.spr");
-	//pPlayer2 = new Car(L"assets/car2.spr");
-
-	//Load NPC sprite
-	for (int i = 0; i < MAX_NPC; i++)
-		m_npc[i] = new Car(L"assets/car2.spr");
+	//Load NPCs sprite
+	for (int i = 0; i < NPC; i++)
+		pNpc[i] = new Car(L"assets/car2.spr");
 
 	pFont = new Font(L"fontSmall");
-
-	pFont->LoadFont();
+	pTitleFont = new Font(L"font");
 
 	//Randomize NPC's X coordinate, restricted by the border
-	for (int i = 0; i < MAX_NPC; i++) {
-		m_npc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - m_npc[i]->Width());
-		m_npc[i]->SetY(0 - ((BORDER_HEIGHT / MAX_NPC) * i));
+	for (int i = 0; i < NPC; i++) {
+		pNpc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - pNpc[i]->Width());
+		pNpc[i]->SetY(0 - ((BORDER_HEIGHT / NPC) * i));
 	}
 
 	hitSoundEffect = LoadAudioSample(L"assets/vine_boom.wav");
 
-	InitPlayer();
+	pPlayer_1->SetPosition(60, pBorder->Bottom() - 2 * pPlayer_1->Height());
+
+#if MULTI_PLAYER
+	pPlayer_2->SetPosition(60, pBorder->Bottom() - 2 * pPlayer_2->Height());
+#endif
+
+	delay = 0.001;
+	speed = 1;
+
+	pTitleFont->DrawString(this, "RACING GAME", 30, SCREEN_HEIGHT / 2);
+	UpdateScreen();
+
+	WaitKey(VK_SPACE);
+
 	return true;
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
 	ClearScreen();
-
-	//DrawSprite(0,0, pMap[0]);
-	//DrawSprite(60,0, pMap[1]);
-	//DrawSprite(0,80, pMap[2]);
-	//DrawSprite(60,80, pMap[3]);
 
 	//int k = 0;
 	//Fill(0,0,2,159, PIXEL_SOLID, FG_WHITE);
@@ -75,67 +86,83 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 	//if (k == 4) k = 0;
 	//k++;
 
-	
-
-	pFont->Print(this, "SCORE", BORDER_WIDTH + 10, BORDER_HEIGHT / 2);
-	//pFont->Print(this, 1, 0, 0);
 
 	timeSinceStart += fElapsedTime;
 	interval += fElapsedTime;
 
-	if(timeSinceStart > 0.001)
+	if(timeSinceStart > 0.01)
 		score++;
 
-	//if (m_keys['A'].bHeld) {
-	//	pPlayer2->MoveLeft(1);
-	//}
+	pFont->DrawString(this, "YOUR SCORE ", MENU_X + 10, MENU_HEIGHT/ 2);
+	pFont->DrawString(this, std::to_string(score), pFont->GetLastPosition());
 
-	//if (m_keys['D'].bHeld) {
-	//	pPlayer2->MoveRight(1);
-	//}
+#if MULTI_PLAYER
+	if (m_keys['A'].bHeld) {
+		pPlayer_2->MoveLeft(1);
+	}
+
+	if (m_keys['D'].bHeld) {
+		pPlayer_2->MoveRight(1);
+	}
+#endif
+
+	if (m_keys[VK_UP].bPressed) {
+		while(speed < 4)
+			speed++;
+	}
+
+	if (m_keys[VK_DOWN].bPressed) {
+		while(speed > 1)
+			speed--;
+	}
 
 	if (m_keys[VK_RIGHT].bHeld) {
-		pPlayer->MoveRight(1);
+		pPlayer_1->MoveRight(speed);
 	}
 
 	if (m_keys[VK_LEFT].bHeld) {
-		pPlayer->MoveLeft(1);
+		pPlayer_1->MoveLeft(speed);
 	}
 
-	if (interval > 0.0005) {
-		for (int i = 0; i < MAX_NPC; i++) {
-			m_npc[i]->MoveDown(1);
+	if (interval > delay) {
+		for (int i = 0; i < NPC; i++) {
+			pNpc[i]->MoveDown(speed);
 		}
 		interval = 0;
 	}
 
-	pPlayer->ClipToTight(*pBorder, 2);
-	//pPlayer2->ClipToTight(*pBorder, 2);
+	pPlayer_1->ClipToTight(*pBorder, 2);
 
-	for (int i = 0; i < MAX_NPC; i++) {
-		if (pPlayer->CollisionWith(*m_npc[i])) {
+#if MULTI_PLAYER
+	pPlayer_2->ClipToTight(*pBorder, 2);
+#endif
+
+	for (int i = 0; i < NPC; i++) {
+		if (pPlayer_1->CollisionWith(*pNpc[i])) {
 			PlaySample(hitSoundEffect);
 			WaitKey(VK_SPACE);
-			InitPlayer();
-			for (int i = 0; i < MAX_NPC; i++) {
-				m_npc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - m_npc[i]->Width());
-				m_npc[i]->SetY(0 - ((BORDER_HEIGHT / MAX_NPC) * i));
+			Spawn(pPlayer_1);
+			for (int i = 0; i < NPC; i++) {
+				pNpc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - pNpc[i]->Width());
+				pNpc[i]->SetY(0 - ((BORDER_HEIGHT / NPC) * i));
 			}
 		}
 	}
 
-	pPlayer->DrawSelf(this);
-	//pPlayer2->DrawSelf(this);
+	pPlayer_1->DrawSelf(this);
 
-	for (int i = 0; i < MAX_NPC; i++) {
-		m_npc[i]->DrawSelf(this);
+#if MULTI_PLAYER
+	pPlayer_2->DrawSelf(this);
+#endif
+
+	for (int i = 0; i < NPC; i++) {
+		pNpc[i]->DrawSelf(this);
 	}
 
-
-	for (int i = 0; i < MAX_NPC; i++) {
-		if (m_npc[i]->OutOfBound(*pBorder)) {
-			m_npc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - m_npc[i]->Width());
-			m_npc[i]->SetY(-50);
+	for (int i = 0; i < NPC; i++) {
+		if (pNpc[i]->OutOfBound(*pBorder)) {
+			pNpc[i]->RandomizeX(pBorder->Left(), pBorder->Right() - pNpc[i]->Width());
+			pNpc[i]->SetY(-50);
 		}
 	}
 
@@ -148,7 +175,13 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
 bool Game::OnUserDestroy() {
 	delete pBorder;
-	delete pPlayer;
+	delete pPlayer_1;
+
+#if MULTI_PLAYER
+	delete pPlayer_2;
+#endif
+
+	delete pFont;
 	return true;
 }
 
@@ -195,8 +228,6 @@ void Game::DrawBorder() {
 	}
 }
 
-void Game::InitPlayer() {
-	pPlayer->SetPosition(60, pBorder->Bottom() - 2 * pPlayer->Height());
-	//pPlayer2->SetPosition(80, pBorder->Bottom() - 2 * pPlayer->Height());
-
+void Game::Spawn(Car* car) {
+	car->SetPosition(60, pBorder->Bottom() - 2 * pPlayer_1->Height());
 }

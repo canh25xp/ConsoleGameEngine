@@ -171,7 +171,7 @@ protected:
 
 	// This structure represents a sound that is currently playing. It only
 	// holds the sound ID and where this instance of it is up to for its
-	// current playback
+	// last playback
 	struct sCurrentlyPlayingSample {
 		int nAudioSampleID;		//0
 		long nSamplePosition;	//0

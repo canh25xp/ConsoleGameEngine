@@ -1,16 +1,11 @@
 #include "font.h"
 
-Font::Font(){
-
-}
-
-
 Font::Font(std::wstring fontFolder){
-	GetFont(fontFolder);
+	OpenFolder(fontFolder);
+	LoadFont();
 }
 
-Font::~Font(){
-
+Font::~Font() {
 }
 
 int Font::GetSpriteIndex(char c){
@@ -23,7 +18,7 @@ int Font::GetSpriteIndex(char c){
 	return -1;
 }
 
-void Font::GetFont(std::wstring fontFolder){
+void Font::OpenFolder(std::wstring fontFolder){
 	fontPath[0] = fontFolder + L"/0.spr";
 	fontPath[1] = fontFolder + L"/1.spr";
 	fontPath[2] = fontFolder + L"/2.spr";
@@ -63,23 +58,46 @@ void Font::GetFont(std::wstring fontFolder){
 }
 
 bool Font::LoadFont(){
+	int w = 0, h = 0;
 	for (int i = 0; i < ALPHABET; i++){
 		if(!fontSpr[i].Load(fontPath[i]))
 			return false;
+		if (fontSpr[i].nHeight > h)
+			h = fontSpr[i].nHeight;
+		if (fontSpr[i].nWidth > w)
+			w = fontSpr[i].nWidth;
 	}
+
+	this->width = w;
+	this->height = h;
+
 	return true;
 }
 
-void Font::Print(ConsoleGameEngine* engine, const char* str, int x, int y){
-	int j = 0, i= 0;
-	for (int k = 0; str[k]!= '\0'; k++){
-		if(str[i] == ' ')
-			i += FONT_WIDTH;
-		if(i*FONT_WIDTH > engine->ScreenWidth() - FONT_WIDTH){
-			j += 13;
-			i = 0;
+void Font::DrawString(ConsoleGameEngine* engine, std::string str, int x, int y){
+	for (size_t i = 0; i < str.length(); i++) {
+		if (str[i] == ' ') {
+			x += width + 1;
+			continue;
 		}
-		engine->DrawSprite(i + x, j + y, &fontSpr[GetSpriteIndex(str[k])]);
-		i += FONT_WIDTH + 1;
+
+		engine->DrawSprite(x, y, &fontSpr[GetSpriteIndex(str[i])]);
+		x += width + 1;
 	}
+	last.x = x;
+	last.y = y;
+}
+
+void Font::DrawString(ConsoleGameEngine* engine, std::string str, Point position) {
+	int x = position.x;
+	int y = position.y;
+	DrawString(engine, str, x, y);
+}
+
+void Font::Endl() {
+	last.y -= height;
+}
+
+Point Font::GetLastPosition() const {
+	return last;
 }
