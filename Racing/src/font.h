@@ -13,7 +13,6 @@ const int FONT_WIDTH = 5;
 
 class Font {
 public:
-	Font() = delete;
 	Font(std::wstring fontFolder);
 	~Font();
 

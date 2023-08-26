@@ -3,16 +3,13 @@
 #include "Car.h"
 #include "font.h"
 
-// define 1 to enable multi-player, define zero to disable
-#define MULTI_PLAYER 0
-
 // numbers of NPC to be render at the same time
-const int NPC = 4;
+const int NPC = 5;
 
 const COLOUR BACK_GROUND	= BG_BLACK;
 const COLOUR BORDER			= BG_DARK_RED;
 
-const int SCREEN_WIDTH		= 200;
+const int SCREEN_WIDTH		= 220;
 const int SCREEN_HEIGHT		= 160;
 const int PIXEL_SIZE		= 4;
 
@@ -42,17 +39,16 @@ public:
 	void WaitKey(int vKey);
 	void FillGrid();
 	void DrawBorder();
+	void DrawLine();
 
 	void Spawn(Car* car);
+	void RandomizeNPC();
+	void TitleScreen();
+	
 
 private:
 	Rect* pBorder;
-
-	Car* pPlayer_1;
-
-#if MULTI_PLAYER
-	Car* pPlayer_2;
-#endif
+	Car* pPlayer;
 
 	Car* pNpc[NPC];
 
@@ -61,6 +57,7 @@ private:
 
 private:
 	int score;
+	int highScore;
 	int speed;
 	float interval;
 	float delay;

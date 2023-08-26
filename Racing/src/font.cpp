@@ -76,11 +76,10 @@ bool Font::LoadFont(){
 
 void Font::DrawString(ConsoleGameEngine* engine, std::string str, int x, int y){
 	for (size_t i = 0; i < str.length(); i++) {
-		if (str[i] == ' ') {
+		if(GetSpriteIndex(str[i]) == -1){
 			x += width + 1;
 			continue;
 		}
-
 		engine->DrawSprite(x, y, &fontSpr[GetSpriteIndex(str[i])]);
 		x += width + 1;
 	}
