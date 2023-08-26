@@ -4,8 +4,8 @@ Car::Car() {
 	this->pSprite = nullptr;
 	this->x = 0;
 	this->y = 0;
-	this->width = 12;
-	this->height = 16;
+	this->width = 0;
+	this->height = 0;
 }
 
 Car::Car(std::wstring sFile) {
