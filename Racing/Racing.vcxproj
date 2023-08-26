@@ -148,15 +148,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Car.h" />
-    <ClInclude Include="ConsoleGameEngine.h" />
-    <ClInclude Include="font.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="Point.h" />
-    <ClInclude Include="Rect.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="assets\car1.spr" />
     <None Include="assets\car2.spr" />
     <None Include="assets\car3.spr" />
@@ -249,14 +240,21 @@
     <Media Include="assets\vine_boom.wav" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Car.cpp" />
-    <ClCompile Include="ConsoleGameEngine.cpp" />
-    <ClCompile Include="font.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Point.cpp" />
-    <ClCompile Include="Rect.cpp" />
+    <ClCompile Include="src\Car.cpp" />
+    <ClCompile Include="src\ConsoleGameEngine.cpp" />
+    <ClCompile Include="src\font.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Point.cpp" />
+    <ClCompile Include="src\Rect.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Car.h" />
+    <ClInclude Include="src\ConsoleGameEngine.h" />
+    <ClInclude Include="src\font.h" />
+    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\Point.h" />
+    <ClInclude Include="src\Rect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
